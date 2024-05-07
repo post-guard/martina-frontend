@@ -1,13 +1,12 @@
-import { AppBar, Toolbar, Typography } from "@mui/material";
+import {LoginPage} from "./LoginPage.tsx";
+
 
 export function Index() {
     return <>
-        <AppBar>
-            <Toolbar>
-                <Typography variant="h6">
-                    主页
-                </Typography>
-            </Toolbar>
-        </AppBar>
+        <div>
+            <LoginPage>
+
+            </LoginPage>
+        </div>
     </>
 }
