@@ -3,22 +3,31 @@ import {Index} from "./Pages/Index";
 import {LoginPage} from "./Pages/LoginPage.tsx";
 import {ErrorPage} from "./Pages/ErrorPage.tsx";
 import AuthRoute from "./Utils/AuthRoute.tsx";
+import {ErrorPage2} from "./Pages/ErrorPage2.tsx";
 
 const routers = createBrowserRouter([
     {
         path: "/",
-        element: <Index/>
+        element: <AuthRoute>
+            <Index/>
+        </AuthRoute>,
+        errorElement: <ErrorPage />,
+        children : [
+            {
+                path: "test",
+                element: <ErrorPage />,
+            },
+            {
+                path: "test2",
+                element: <ErrorPage2 />
+            }
+        ]
     },
     {
         path: "/login",
         element: <LoginPage/>
     },
-    {
-        path: "/error",
-        element: <AuthRoute>
-            <ErrorPage/>
-        </AuthRoute>
-    }
+
 ])
 
 export function App() {

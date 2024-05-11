@@ -4,7 +4,7 @@ import createClient from "openapi-fetch";
 import * as openapi from '../Interfaces/openapi'
 import {useState} from "react";
 import {enqueueSnackbar} from "notistack";
-import {setToken} from "../Stores/UserSlice.ts";
+import {setToken, setUser} from "../Stores/UserSlice.ts";
 import {useAppDispatch} from "../Utils/StoreHooks.ts";
 
 const client = createClient<openapi.paths>()
@@ -14,14 +14,15 @@ export function LoginPage() {
     const navigate = useNavigate();
     const [loginButtonState, setLoginButtonState] = useState(true)
     const [loginFormData, setLoginFormData] = useState({
-        "userId": "",
+        "id": "",
         "password": ""
     })
     const onLoginButtonClick = async () => {
         setLoginButtonState(false);
-        const responses = await client.POST("/api/User/login", {
+        const userId = loginFormData.id;
+        const responses = await client.POST("/api/user/login", {
             body: {
-                "userId": loginFormData.userId,
+                "id": loginFormData.id,
                 "password": loginFormData.password
             }
         })
@@ -30,17 +31,18 @@ export function LoginPage() {
             // 登录成功
             enqueueSnackbar("登录成功,即将跳转页面", {
                 variant: "success",
-                autoHideDuration:3000,
+                autoHideDuration: 3000,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center',
                 }
             });
+            if (responses.data !== undefined) {
+                dispatch(setToken(responses.data.token))
+                dispatch(setUser({token: responses.data.token, userId: userId}))
+            }
             setTimeout(() => {
-                if(responses.data !== undefined) {
-                    dispatch(setToken(responses.data.token))
-                }
-                navigate('/error')
+                navigate('/')
                 setLoginButtonState(true);
             }, 3000)
 
@@ -48,7 +50,7 @@ export function LoginPage() {
             // 登录失败
             enqueueSnackbar("登录失败", {
                 variant: "error",
-                autoHideDuration:3000,
+                autoHideDuration: 3000,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center'
@@ -56,7 +58,6 @@ export function LoginPage() {
             });
             setLoginButtonState(true);
         }
-        console.log(responses)
     }
 
     return <>
@@ -94,8 +95,8 @@ export function LoginPage() {
                                         variant="standard"
                                         autoComplete={"user-name"}
                                         style={{width: "80%"}}
-                                        value={loginFormData.userId}
-                                        onChange={(e) => setLoginFormData({...loginFormData, userId: e.target.value})}
+                                        value={loginFormData.id}
+                                        onChange={(e) => setLoginFormData({...loginFormData, id: e.target.value})}
                                     />
                                     <TextField
                                         required
