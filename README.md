@@ -15,10 +15,11 @@ npm run dev
 
 ## 请求接口
 后端提供的接口在[http://martina.rrricardo.top/swagger]()
+
 前端为支持typescript，利用`openapi-typescript`生成接口类型文档
 要更新接口类型文档，使用
 ```shell
-npx openapi-typescript http://martina.rrricardo.top/swagger/v1/swagger.json
+npx openapi-typescript http://martina.rrricardo.top/swagger/v1/swagger.json  --output src/Interfaces/openapi.d.ts
 ```
 生成接口文档内容，保存在`interfaces/openapi.d.ts`文件中
 <br>

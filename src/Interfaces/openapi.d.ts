@@ -5,211 +5,497 @@
 
 
 export interface paths {
-    "/api/user/register": {
-        /** 注册用户 */
-        post: {
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["RegisterRequest"];
-                    "text/json": components["schemas"]["RegisterRequest"];
-                    "application/*+json": components["schemas"]["RegisterRequest"];
-                };
-            };
-            responses: {
-                /** @description Success */
-                200: {
-                    content: never;
-                };
-                /** @description Bad Request */
-                400: {
-                    content: {
-                        "text/plain": components["schemas"]["ExceptionMessage"];
-                        "application/json": components["schemas"]["ExceptionMessage"];
-                        "text/json": components["schemas"]["ExceptionMessage"];
-                    };
-                };
-            };
+  "/api/checkin": {
+    /** 查询所有的入住记录 */
+    get: {
+      parameters: {
+        query?: {
+          roomId?: string;
+          userId?: string;
+          beginTime?: number;
+          endTime?: number;
         };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["CheckinResponse"][];
+            "application/json": components["schemas"]["CheckinResponse"][];
+            "text/json": components["schemas"]["CheckinResponse"][];
+          };
+        };
+      };
     };
-    "/api/user/login": {
-        /** 用户登录 */
-        post: {
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["LoginRequest"];
-                    "text/json": components["schemas"]["LoginRequest"];
-                    "application/*+json": components["schemas"]["LoginRequest"];
-                };
-            };
-            responses: {
-                /** @description Success */
-                200: {
-                    content: {
-                        "text/plain": components["schemas"]["LoginResponse"];
-                        "application/json": components["schemas"]["LoginResponse"];
-                        "text/json": components["schemas"]["LoginResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    content: {
-                        "text/plain": components["schemas"]["ExceptionMessage"];
-                        "application/json": components["schemas"]["ExceptionMessage"];
-                        "text/json": components["schemas"]["ExceptionMessage"];
-                    };
-                };
-            };
+    /** 创建指定的入住记录 */
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["CheckinRequest"];
+          "text/json": components["schemas"]["CheckinRequest"];
+          "application/*+json": components["schemas"]["CheckinRequest"];
         };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: {
+            "text/plain": components["schemas"]["CheckinResponse"];
+            "application/json": components["schemas"]["CheckinResponse"];
+            "text/json": components["schemas"]["CheckinResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+      };
     };
-    "/api/user/{userId}": {
-        /** 获得用户信息 */
-        get: {
-            parameters: {
-                path: {
-                    userId: string;
-                };
-            };
-            responses: {
-                /** @description Success */
-                200: {
-                    content: {
-                        "text/plain": components["schemas"]["UserResponse"];
-                        "application/json": components["schemas"]["UserResponse"];
-                        "text/json": components["schemas"]["UserResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    content: never;
-                };
-                /** @description Forbidden */
-                403: {
-                    content: never;
-                };
-            };
+  };
+  "/api/checkin/{recordId}": {
+    /** 列出指定的入住记录 */
+    get: {
+      parameters: {
+        path: {
+          recordId: string;
         };
-        /** 修改用户信息 */
-        put: {
-            parameters: {
-                path: {
-                    userId: string;
-                };
-            };
-            requestBody?: {
-                content: {
-                    "application/json": components["schemas"]["UserResponse"];
-                    "text/json": components["schemas"]["UserResponse"];
-                    "application/*+json": components["schemas"]["UserResponse"];
-                };
-            };
-            responses: {
-                /** @description Success */
-                200: {
-                    content: {
-                        "text/plain": components["schemas"]["UserResponse"];
-                        "application/json": components["schemas"]["UserResponse"];
-                        "text/json": components["schemas"]["UserResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    content: {
-                        "text/plain": components["schemas"]["ExceptionMessage"];
-                        "application/json": components["schemas"]["ExceptionMessage"];
-                        "text/json": components["schemas"]["ExceptionMessage"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    content: never;
-                };
-                /** @description Forbidden */
-                403: {
-                    content: never;
-                };
-            };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["CheckinResponse"];
+            "application/json": components["schemas"]["CheckinResponse"];
+            "text/json": components["schemas"]["CheckinResponse"];
+          };
         };
+        /** @description Not Found */
+        404: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+      };
     };
-    "/api/user/all": {
-        /** 获得所有的用户信息 */
-        get: {
-            responses: {
-                /** @description Success */
-                200: {
-                    content: {
-                        "text/plain": components["schemas"]["UserResponse"][];
-                        "application/json": components["schemas"]["UserResponse"][];
-                        "text/json": components["schemas"]["UserResponse"][];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    content: never;
-                };
-                /** @description Forbidden */
-                403: {
-                    content: never;
-                };
-            };
+    /** 删除指定的入住记录 */
+    delete: {
+      parameters: {
+        path: {
+          recordId: string;
         };
+      };
+      responses: {
+        /** @description No Content */
+        204: {
+          content: never;
+        };
+        /** @description Not Found */
+        404: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+      };
     };
+  };
+  "/api/room": {
+    /** 查询所有的房间 */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["RoomResponse"][];
+            "application/json": components["schemas"]["RoomResponse"][];
+            "text/json": components["schemas"]["RoomResponse"][];
+          };
+        };
+      };
+    };
+    /** 创建房间 */
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["CreateRoomRequest"];
+          "text/json": components["schemas"]["CreateRoomRequest"];
+          "application/*+json": components["schemas"]["CreateRoomRequest"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          content: {
+            "text/plain": components["schemas"]["RoomResponse"];
+            "application/json": components["schemas"]["RoomResponse"];
+            "text/json": components["schemas"]["RoomResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/api/room/{roomId}": {
+    /** 列出指定房间的信息 */
+    get: {
+      parameters: {
+        path: {
+          roomId: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["RoomResponse"];
+            "application/json": components["schemas"]["RoomResponse"];
+            "text/json": components["schemas"]["RoomResponse"];
+          };
+        };
+        /** @description Not Found */
+        404: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+      };
+    };
+    /** 修改指定房间的信息 */
+    put: {
+      parameters: {
+        path: {
+          roomId: string;
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["CreateRoomRequest"];
+          "text/json": components["schemas"]["CreateRoomRequest"];
+          "application/*+json": components["schemas"]["CreateRoomRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["RoomResponse"];
+            "application/json": components["schemas"]["RoomResponse"];
+            "text/json": components["schemas"]["RoomResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+      };
+    };
+    /** 删除指定的房间 */
+    delete: {
+      parameters: {
+        path: {
+          roomId: string;
+        };
+      };
+      responses: {
+        /** @description No Content */
+        204: {
+          content: never;
+        };
+        /** @description Not Found */
+        404: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+      };
+    };
+  };
+  "/api/user/register": {
+    /** 注册用户 */
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["RegisterRequest"];
+          "text/json": components["schemas"]["RegisterRequest"];
+          "application/*+json": components["schemas"]["RegisterRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: never;
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+      };
+    };
+  };
+  "/api/user/login": {
+    /** 用户登录 */
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["LoginRequest"];
+          "text/json": components["schemas"]["LoginRequest"];
+          "application/*+json": components["schemas"]["LoginRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["LoginResponse"];
+            "application/json": components["schemas"]["LoginResponse"];
+            "text/json": components["schemas"]["LoginResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+      };
+    };
+  };
+  "/api/user/{userId}": {
+    /** 获得用户信息 */
+    get: {
+      parameters: {
+        path: {
+          userId: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["UserResponse"];
+            "application/json": components["schemas"]["UserResponse"];
+            "text/json": components["schemas"]["UserResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+    /** 修改用户信息 */
+    put: {
+      parameters: {
+        path: {
+          userId: string;
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["UserResponse"];
+          "text/json": components["schemas"]["UserResponse"];
+          "application/*+json": components["schemas"]["UserResponse"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["UserResponse"];
+            "application/json": components["schemas"]["UserResponse"];
+            "text/json": components["schemas"]["UserResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/user/all": {
+    /** 获得所有的用户信息 */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["UserResponse"][];
+            "application/json": components["schemas"]["UserResponse"][];
+            "text/json": components["schemas"]["UserResponse"][];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
 
 export interface components {
-    schemas: {
-        /** @description 错误信息传输类 */
-        ExceptionMessage: {
-            /** @description 错误信息 */
-            message: string;
-        };
-        /** @description 用户登录请求的传输类 */
-        LoginRequest: {
-            /** @description 需要登录的用户ID */
-            id: string;
-            /** @description 登录用户的密码 */
-            password: string;
-        };
-        /** @description 用户登录信息的传输类 */
-        LoginResponse: {
-            /** @description 登录成功之后生成的令牌 */
-            token: string;
-        };
-        /** @description 用户权限信息的传输类 */
-        PermissionResponse: {
-            /** @description 用户是否为超级管理员 */
-            sudo: boolean;
-            /** @description 用户是否为客房管理员 */
-            roomAdmin: boolean;
-            /** @description 用户是否为空调管理员 */
-            airconAdmin: boolean;
-            /** @description 用户是否为账单管理员 */
-            billAdmin: boolean;
-        };
-        /** @description 注册的请求信息传输类 */
-        RegisterRequest: {
-            /** @description 用户ID */
-            id: string;
-            /** @description 用户名 */
-            name: string;
-            /** @description 用户密码 */
-            password: string;
-        };
-        /** @description 用户信息传输类 */
-        UserResponse: {
-            /** @description 用户ID */
-            id: string;
-            /** @description 用户名 */
-            name: string;
-            auth: components["schemas"]["PermissionResponse"];
-        };
+  schemas: {
+    CheckinRequest: {
+      /** @description 入住的房间号 */
+      roomId: string;
+      /** @description 入住的用户ID */
+      userId: string;
+      /**
+       * Format: int64
+       * @description 入住的时间
+       */
+      beginTime: number;
+      /**
+       * Format: int64
+       * @description 退房的时间
+       */
+      endTime: number;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    CheckinResponse: {
+      /** @description 入住记录ID */
+      checkinId: string;
+      /** @description 入住的房间ID */
+      roomId: string;
+      /** @description 入住的用户ID */
+      userId: string;
+      /**
+       * Format: int64
+       * @description 入住时间
+       */
+      beginTime: number;
+      /**
+       * Format: int64
+       * @description 退房时间
+       */
+      endTime: number;
+      /** @description 是否已经退房 */
+      checkout: boolean;
+    };
+    CreateRoomRequest: {
+      /** @description 创建的房间名称 */
+      roomName: string;
+      /**
+       * Format: float
+       * @description 房间的单价
+       */
+      pricePerDay: number;
+      /**
+       * Format: float
+       * @description 房间的基础环境温度
+       */
+      roomBasicTemperature: number;
+    };
+    /** @description 错误信息传输类 */
+    ExceptionMessage: {
+      /** @description 错误信息 */
+      message: string;
+    };
+    /** @description 用户登录请求的传输类 */
+    LoginRequest: {
+      /** @description 需要登录的用户ID */
+      id: string;
+      /** @description 登录用户的密码 */
+      password: string;
+    };
+    /** @description 用户登录信息的传输类 */
+    LoginResponse: {
+      /** @description 登录成功之后生成的令牌 */
+      token: string;
+    };
+    /** @description 用户权限信息的传输类 */
+    PermissionResponse: {
+      /** @description 用户是否为超级管理员 */
+      sudo: boolean;
+      /** @description 用户是否为客房管理员 */
+      roomAdmin: boolean;
+      /** @description 用户是否为空调管理员 */
+      airconAdmin: boolean;
+      /** @description 用户是否为账单管理员 */
+      billAdmin: boolean;
+    };
+    /** @description 注册的请求信息传输类 */
+    RegisterRequest: {
+      /** @description 用户ID */
+      id: string;
+      /** @description 用户名 */
+      name: string;
+      /** @description 用户密码 */
+      password: string;
+    };
+    /** @description 房间传输类 */
+    RoomResponse: {
+      /** @description 房间的ID */
+      roomId: string;
+      /** @description 房间的名称 */
+      roomName: string;
+      /**
+       * Format: float
+       * @description 房间的单价
+       */
+      pricePerDay: number;
+      /**
+       * Format: float
+       * @description 房间的基础环境温度
+       */
+      roomBaiscTemperature: number;
+    };
+    /** @description 用户信息传输类 */
+    UserResponse: {
+      /** @description 用户ID */
+      id: string;
+      /** @description 用户名 */
+      name: string;
+      auth: components["schemas"]["PermissionResponse"];
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 
 export type $defs = Record<string, never>;
