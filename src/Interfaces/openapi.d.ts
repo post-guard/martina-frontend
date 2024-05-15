@@ -6,7 +6,10 @@
 
 export interface paths {
   "/api/checkin": {
-    /** 查询所有的入住记录 */
+    /**
+     * 查询所有的入住记录
+     * @description 需要房间管理员及以上的权限
+     */
     get: {
       parameters: {
         query?: {
@@ -25,9 +28,20 @@ export interface paths {
             "text/json": components["schemas"]["CheckinResponse"][];
           };
         };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
       };
     };
-    /** 创建指定的入住记录 */
+    /**
+     * 创建指定的入住记录
+     * @description 需要房间管理员及以上的权限
+     */
     post: {
       requestBody?: {
         content: {
@@ -53,11 +67,22 @@ export interface paths {
             "text/json": components["schemas"]["ExceptionMessage"];
           };
         };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
       };
     };
   };
   "/api/checkin/{recordId}": {
-    /** 列出指定的入住记录 */
+    /**
+     * 列出指定的入住记录
+     * @description 需要房间管理员及以上的权限
+     */
     get: {
       parameters: {
         path: {
@@ -73,6 +98,14 @@ export interface paths {
             "text/json": components["schemas"]["CheckinResponse"];
           };
         };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
         /** @description Not Found */
         404: {
           content: {
@@ -83,7 +116,10 @@ export interface paths {
         };
       };
     };
-    /** 删除指定的入住记录 */
+    /**
+     * 删除指定的入住记录
+     * @description 需要房间管理员及以上的权限
+     */
     delete: {
       parameters: {
         path: {
@@ -93,6 +129,14 @@ export interface paths {
       responses: {
         /** @description No Content */
         204: {
+          content: never;
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
           content: never;
         };
         /** @description Not Found */
@@ -107,7 +151,10 @@ export interface paths {
     };
   };
   "/api/room": {
-    /** 查询所有的房间 */
+    /**
+     * 查询所有的房间
+     * @description 登录即可获取
+     */
     get: {
       responses: {
         /** @description Success */
@@ -118,9 +165,20 @@ export interface paths {
             "text/json": components["schemas"]["RoomResponse"][];
           };
         };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
       };
     };
-    /** 创建房间 */
+    /**
+     * 创建房间
+     * @description 需要超级管理员权限
+     */
     post: {
       requestBody?: {
         content: {
@@ -138,11 +196,22 @@ export interface paths {
             "text/json": components["schemas"]["RoomResponse"];
           };
         };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
       };
     };
   };
   "/api/room/{roomId}": {
-    /** 列出指定房间的信息 */
+    /**
+     * 列出指定房间的信息
+     * @description 登录即可访问
+     */
     get: {
       parameters: {
         path: {
@@ -158,6 +227,14 @@ export interface paths {
             "text/json": components["schemas"]["RoomResponse"];
           };
         };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
         /** @description Not Found */
         404: {
           content: {
@@ -168,7 +245,10 @@ export interface paths {
         };
       };
     };
-    /** 修改指定房间的信息 */
+    /**
+     * 修改指定房间的信息
+     * @description 需要超级管理员权限
+     */
     put: {
       parameters: {
         path: {
@@ -199,9 +279,20 @@ export interface paths {
             "text/json": components["schemas"]["ExceptionMessage"];
           };
         };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
       };
     };
-    /** 删除指定的房间 */
+    /**
+     * 删除指定的房间
+     * @description 需要超级管理员权限
+     */
     delete: {
       parameters: {
         path: {
@@ -211,6 +302,14 @@ export interface paths {
       responses: {
         /** @description No Content */
         204: {
+          content: never;
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
           content: never;
         };
         /** @description Not Found */
@@ -383,6 +482,8 @@ export interface components {
       roomId: string;
       /** @description 入住的用户ID */
       userId: string;
+      /** @description 入住的用户姓名 */
+      username: string;
       /**
        * Format: int64
        * @description 入住的时间
@@ -481,6 +582,7 @@ export interface components {
        * @description 房间的基础环境温度
        */
       roomBaiscTemperature: number;
+      checkinStatus?: components["schemas"]["CheckinResponse"];
     };
     /** @description 用户信息传输类 */
     UserResponse: {

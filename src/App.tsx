@@ -4,6 +4,7 @@ import {LoginPage} from "./Pages/LoginPage.tsx";
 import {ErrorPage} from "./Pages/ErrorPage.tsx";
 import AuthRoute from "./Utils/AuthRoute.tsx";
 import {ErrorPage2} from "./Pages/ErrorPage2.tsx";
+import { DetailedListPage } from './Pages/DetailedListPage.tsx';
 
 const routers = createBrowserRouter([
     {
@@ -20,6 +21,10 @@ const routers = createBrowserRouter([
             {
                 path: "test2",
                 element: <ErrorPage2 />
+            },
+            {
+                path: "detailList",
+                element: <DetailedListPage />
             }
         ]
     },

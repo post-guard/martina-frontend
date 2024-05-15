@@ -39,6 +39,10 @@ export function Index() {
                 {
                     name: "TestPage2",
                     url: "test2"
+                },
+                {
+                    name: "详单",
+                    url: "detailList"
                 }
             ];
             break;
