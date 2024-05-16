@@ -6,6 +6,10 @@ import createClient from "openapi-fetch";
 import * as openapi from "../Interfaces/openapi";
 import {useAuthMiddleware} from "../Utils/Middleware.tsx";
 import {enqueueSnackbar} from "notistack";
+import {green} from "@mui/material/colors";
+import {Button} from "@mui/material";
+import {useAppSelector} from "../Utils/StoreHooks.ts";
+import CreateRoomModal from "../Components/CreateRoomModal.tsx";
 
 
 const client = createClient<openapi.paths>();
@@ -14,6 +18,7 @@ export function RoomStatePage() {
     const authMiddleware = useAuthMiddleware();
     const [rooms, setRooms] = useState<Room[]>([])
     const [showCheckInModal, setShowCheckInModal] = useState(false);
+    const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<Room>({id:'',name:'',status:'occupied'});
 
     useEffect(() => {
@@ -55,8 +60,16 @@ export function RoomStatePage() {
         }
     }
 
+    const onClickRoomClick = () => {
+        setShowCreateRoomModal(true);
+    }
     const onRegisterModalClose = () => {
         setShowCheckInModal(false);
+        refreshRooms();
+    }
+
+    const onCreateRoomModalClose = () => {
+        setShowCreateRoomModal(false);
         refreshRooms();
     }
 
@@ -67,6 +80,8 @@ export function RoomStatePage() {
     }
 
     client.use(authMiddleware);
+
+    const userInfo = useAppSelector((store) => store.userInfo);
 
     return (
         <div className={"room-state-page"} style={{
@@ -85,6 +100,31 @@ export function RoomStatePage() {
                     selectedRoom={selectedRoom}
                 >
                 </CheckInModal>
+            }
+
+            {
+                showCreateRoomModal &&
+                <CreateRoomModal onClose={onCreateRoomModalClose}>
+                </CreateRoomModal>
+            }
+            {
+                 userInfo.auth === "sudo" &&
+                <Button
+                    variant='contained'
+                    sx={{
+                        position:'absolute',
+                        right:'5%',
+                        bottom:'10%',
+                        width:'6%',
+                        height:'12%',
+                        borderRadius:'12px',
+                        backgroundColor:green[800],
+                        ":hover": {backgroundColor:green[900]},
+                    }}
+                    onClick={onClickRoomClick}
+                >
+                    创建房间
+                </Button>
             }
 
         </div>

@@ -20,6 +20,14 @@ export function Index() {
                     name: "空调控制",
                     url: "air-control"
                 },
+                {
+                    name: "房间管理",
+                    url: "roomState"
+                },
+                {
+                    name:"结账办理",
+                    url:"checkOut"
+                }
             ];
             break;
         }
