@@ -7,6 +7,7 @@ import {RoomStatePage} from "./Pages/RoomStatePage.tsx";
 
 import {ErrorPage2} from "./Pages/ErrorPage2.tsx";
 import { DetailedListPage } from './Pages/DetailedListPage.tsx';
+import {AirConPanelPage} from "./Pages/AirConPanelPage.tsx";
 
 const routers = createBrowserRouter([
     {
@@ -17,8 +18,8 @@ const routers = createBrowserRouter([
         errorElement: <ErrorPage />,
         children : [
             {
-                path: "test",
-                element: <ErrorPage />,
+                path: "air-control",
+                element: <AirConPanelPage />,
             },
             {
                 path: "test2",

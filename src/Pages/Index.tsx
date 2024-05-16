@@ -15,7 +15,12 @@ export function Index() {
     let childrenPages: { name: string, url: string }[] = [];
     switch (userAuth) {
         case "sudo" : {
-            childrenPages = [];
+            childrenPages = [
+                {
+                    name: "空调控制",
+                    url: "air-control"
+                },
+            ];
             break;
         }
         case "roomAdmin" : {
@@ -42,8 +47,8 @@ export function Index() {
         case "guest" : {
             childrenPages = [
                 {
-                    name: "TestPage",
-                    url: "test"
+                    name: "空调控制",
+                    url: "air-control"
                 },
                 {
                     name: "TestPage2",

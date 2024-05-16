@@ -5,6 +5,32 @@
 
 
 export interface paths {
+  "/api/airConditioner/{roomId}": {
+    /**
+     * 发起空调服务请求
+     * @description 要求发起请求的用户是当前房间的住户
+     */
+    post: {
+      parameters: {
+        path: {
+          roomId: string;
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["AirConditionerRequest"];
+          "text/json": components["schemas"]["AirConditionerRequest"];
+          "application/*+json": components["schemas"]["AirConditionerRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
   "/api/checkin": {
     /**
      * 查询所有的入住记录
@@ -246,50 +272,6 @@ export interface paths {
       };
     };
     /**
-     * 修改指定房间的信息
-     * @description 需要超级管理员权限
-     */
-    put: {
-      parameters: {
-        path: {
-          roomId: string;
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateRoomRequest"];
-          "text/json": components["schemas"]["CreateRoomRequest"];
-          "application/*+json": components["schemas"]["CreateRoomRequest"];
-        };
-      };
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "text/plain": components["schemas"]["RoomResponse"];
-            "application/json": components["schemas"]["RoomResponse"];
-            "text/json": components["schemas"]["RoomResponse"];
-          };
-        };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "text/plain": components["schemas"]["ExceptionMessage"];
-            "application/json": components["schemas"]["ExceptionMessage"];
-            "text/json": components["schemas"]["ExceptionMessage"];
-          };
-        };
-        /** @description Unauthorized */
-        401: {
-          content: never;
-        };
-        /** @description Forbidden */
-        403: {
-          content: never;
-        };
-      };
-    };
-    /**
      * 删除指定的房间
      * @description 需要超级管理员权限
      */
@@ -404,6 +386,14 @@ export interface paths {
         403: {
           content: never;
         };
+        /** @description Not Found */
+        404: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
       };
     };
     /** 修改用户信息 */
@@ -477,6 +467,39 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    AirConditionerRequest: {
+      /** @description 开启还是关闭空调 */
+      open: boolean;
+      /**
+       * Format: float
+       * @description 要求的目标的温度
+       */
+      targetTemperature?: number;
+      speed?: components["schemas"]["FanSpeed"];
+    };
+    AirConditionerResponse: {
+      /** @description 空调所在房间的ID */
+      roomId: string;
+      /** @description 空调是否开启 */
+      opening: boolean;
+      /**
+       * Format: float
+       * @description 房间的当前温度
+       */
+      temperature: number;
+      /**
+       * Format: float
+       * @description 空调的目标温度
+       * 当空调开启时有效
+       */
+      targetTemperature: number;
+      speed: components["schemas"]["FanSpeed"];
+      /**
+       * @description 空调是在制冷还是在制热
+       * 当空调开启时有效
+       */
+      cooling: boolean;
+    };
     CheckinRequest: {
       /** @description 入住的房间号 */
       roomId: string;
@@ -534,6 +557,15 @@ export interface components {
       /** @description 错误信息 */
       message: string;
     };
+    /**
+     * Format: int32
+     * @description 风速的选项
+     * 0 低速风
+     * 1 中速风
+     * 2 高速风
+     * @enum {integer}
+     */
+    FanSpeed: 0 | 1 | 2;
     /** @description 用户登录请求的传输类 */
     LoginRequest: {
       /** @description 需要登录的用户ID */
@@ -582,6 +614,7 @@ export interface components {
        * @description 房间的基础环境温度
        */
       roomBaiscTemperature: number;
+      airConditioner: components["schemas"]["AirConditionerResponse"];
       checkinStatus?: components["schemas"]["CheckinResponse"];
     };
     /** @description 用户信息传输类 */
@@ -591,6 +624,7 @@ export interface components {
       /** @description 用户名 */
       name: string;
       auth: components["schemas"]["PermissionResponse"];
+      checkin?: components["schemas"]["CheckinResponse"];
     };
   };
   responses: never;
