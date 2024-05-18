@@ -6,8 +6,9 @@ import AuthRoute from "./Utils/AuthRoute.tsx";
 import {RoomStatePage} from "./Pages/RoomStatePage.tsx";
 
 import {ErrorPage2} from "./Pages/ErrorPage2.tsx";
-import { DetailedListPage } from './Pages/DetailedListPage.tsx';
+import {DetailedListPage} from './Pages/DetailedListPage.tsx';
 import {AirConPanelPage} from "./Pages/AirConPanelPage.tsx";
+import {MonitorPage} from "./Pages/MonitorPage.tsx";
 
 const routers = createBrowserRouter([
     {
@@ -15,23 +16,27 @@ const routers = createBrowserRouter([
         element: <AuthRoute>
             <Index/>
         </AuthRoute>,
-        errorElement: <ErrorPage />,
-        children : [
+        errorElement: <ErrorPage/>,
+        children: [
             {
                 path: "air-control",
-                element: <AirConPanelPage />,
+                element: <AirConPanelPage/>,
             },
             {
                 path: "test2",
-                element: <ErrorPage2 />
+                element: <ErrorPage2/>
             },
             {
                 path: "detailList",
-                element: <DetailedListPage />
+                element: <DetailedListPage/>
             },
             {
-                path:"roomState",
-                element:<RoomStatePage/>
+                path: "roomState",
+                element: <RoomStatePage/>
+            },
+            {
+                path: "monitor",
+                element: <MonitorPage/>
             }
         ]
     },

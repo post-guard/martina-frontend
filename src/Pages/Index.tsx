@@ -17,6 +17,10 @@ export function Index() {
         case "sudo" : {
             childrenPages = [
                 {
+                    name: "空调监控",
+                    url: "monitor"
+                },
+                {
                     name: "空调控制",
                     url: "air-control"
                 },
@@ -45,7 +49,12 @@ export function Index() {
             break;
         }
         case "airconAdmin" : {
-            childrenPages = [];
+            childrenPages = [
+                {
+                    name: "空调监控",
+                    url: "monitor"
+                },
+            ];
             break;
         }
         case "billAdmin" : {
