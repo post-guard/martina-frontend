@@ -6,11 +6,9 @@ import {
     Box,
     Grid
 } from "@mui/material";
-import useWebSocket from "react-use-websocket";
-import {useCallback, useEffect,  useState} from "react";
-import {useAuthMiddleware} from "../Utils/Middleware.tsx";
-import createClient from "openapi-fetch";
-import * as openapi from "../Interfaces/openapi";
+
+import {useLayoutEffect, useState} from "react";
+import {AirConditionerState} from "../Interfaces/AirConditionerState.ts";
 
 interface airConditionerState {
     temperature: number,
@@ -19,10 +17,8 @@ interface airConditionerState {
     waitingNum: number
 }
 
-export function AirConDisplayCard({roomId}:{roomId : string}) {
-    const authMiddleware = useAuthMiddleware();
-    const client = createClient<openapi.paths>();
-    client.use(authMiddleware)
+export function AirConDisplayCard({roomData}:{roomData:AirConditionerState}) {
+
     const [currentState, setCurrentState] = useState<airConditionerState>({
         temperature: 0,
         speed: 0,
@@ -30,34 +26,14 @@ export function AirConDisplayCard({roomId}:{roomId : string}) {
         waitingNum: 0
     })
 
-    const getSocketUrl = useCallback(() => {
-        console.log(roomId)
-        return 'ws://martina.rrricardo.top/api/airConditioner/ws/' + roomId;
-    },[roomId]);
-
-    const {
-        lastMessage,
-    } = useWebSocket(getSocketUrl, {
-        onOpen: () => console.log('websocket opened'),
-        retryOnError: true,
-        shouldReconnect: () => true,
-        reconnectAttempts: 10,
-        reconnectInterval: (attemptNumber) =>
-            Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
-    });
-
-    useEffect(() => {
-        if (lastMessage !== null) {
-            console.log(JSON.parse(lastMessage.data))
-            const data = JSON.parse(lastMessage.data)
+    useLayoutEffect(() => {
             setCurrentState({
-                temperature : data.temperature,
-                speed: data.speed,
-                cooling : data.cooling,
+                temperature : roomData.temperature,
+                speed: roomData.speed,
+                cooling : roomData.cooling,
                 waitingNum : 114514
             })
-        }
-    }, [lastMessage]);
+    }, [roomData]);
 
 
     return <>

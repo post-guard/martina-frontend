@@ -11,72 +11,31 @@ import {
     IconButton
 } from "@mui/material";
 import {KeyboardArrowUp, KeyboardArrowDown, PowerSettingsNew} from '@mui/icons-material';
-import React, {useEffect, useState} from "react";
+import React, {useLayoutEffect, useRef, useState} from "react";
 import createClient from "openapi-fetch";
 import * as openapi from "../Interfaces/openapi";
 import {useAuthMiddleware} from "../Utils/Middleware.tsx";
 import {enqueueSnackbar} from "notistack";
+import {AirConditionerState} from "../Interfaces/AirConditionerState.ts";
+import {AirConditionerController} from "../Interfaces/AirConditionerController.ts";
 
-interface airConditionerState {
-    opening: boolean,
-    targetTemperature: number,
-    speed: 0 | 1 | 2 | undefined
-}
-
-export function AirConControlCard({roomId}: { roomId: string }) {
+export function AirConControlCard({roomData,targetState,setTargetState,targetChanged,setTargetChanged}:
+                                      {roomData:AirConditionerState,
+                                      targetState:AirConditionerController,
+                                      setTargetState: React.Dispatch<React.SetStateAction<AirConditionerController>>,
+                                      targetChanged:boolean,
+                                      setTargetChanged: React.Dispatch<React.SetStateAction<boolean>>}) {
     const authMiddleware = useAuthMiddleware();
     const client = createClient<openapi.paths>();
     client.use(authMiddleware)
-    const [targetState, setTargetState] = useState<airConditionerState>({
-        "opening": false,
-        "targetTemperature": 0,
-        "speed": 0
-    })
-    const [targetChanged, setTargetChanged] = useState(false);
+    const roomId = useRef('0')
+    const [powerButtonColor, setPowerButtonColor] = useState(targetState.opening ? '#1976d2' : 'gray')
 
-    const [powerButtonColor, setPowerButtonColor] = useState('gray')
+    useLayoutEffect(() => {
+        roomId.current = roomData.roomId;
 
-    useEffect(() => {
-        const getRoomInfo = async () => {
-            const responses = await client.GET('/api/room/{roomId}', {
-                params: {
-                    path: {
-                        roomId: roomId
-                    }
-                }
-            })
-            if (responses.response.status === 200 && responses.data !== undefined) {
-                setTargetState({
-                    targetTemperature: responses.data.airConditioner.targetTemperature,
-                    speed: responses.data.airConditioner.speed,
-                    opening: responses.data.airConditioner.opening,
-                })
-                if(responses.data.airConditioner.opening) {
-                    setPowerButtonColor('#1976d2')
-                } else {
-                    setPowerButtonColor('gray')
-                }
-                // if (responses.data.checkinStatus !== undefined && responses.data.checkinStatus.checkout) {
-                //     enqueueSnackbar("您已退房，无法使用空调服务", {
-                //         variant: "error",
-                //         autoHideDuration: 1500,
-                //         anchorOrigin: {
-                //             vertical: 'top',
-                //             horizontal: 'center',
-                //         }
-                //     });
-                // } else {
-                //     setTargetState({
-                //         opening: responses.data.airConditioner.opening,
-                //         targetTemperature: responses.data.airConditioner.temperature,
-                //         speed: responses.data.airConditioner.speed
-                //     })
-                // }
-            }
-        }
-        getRoomInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [roomId]);
+    }, [roomData]);
+
     const handleWindSpeedChange = (
         _event: React.MouseEvent<HTMLElement>,
         newSpeed: string,
@@ -96,7 +55,7 @@ export function AirConControlCard({roomId}: { roomId: string }) {
             const responses = await client.POST('/api/airConditioner/{roomId}', {
                 params: {
                     path: {
-                        roomId: roomId
+                        roomId: roomId.current
                     }
                 },
                 body: {
@@ -132,7 +91,7 @@ export function AirConControlCard({roomId}: { roomId: string }) {
             const responses = await client.POST('/api/airConditioner/{roomId}', {
                 params: {
                     path: {
-                        roomId: roomId
+                        roomId: roomId.current
                     }
                 },
                 body: {
@@ -185,7 +144,7 @@ export function AirConControlCard({roomId}: { roomId: string }) {
         const responses = await client.POST('/api/airConditioner/{roomId}', {
             params: {
                 path: {
-                    roomId: roomId
+                    roomId: roomId.current
                 }
             },
             body: {

@@ -13,11 +13,14 @@ import {
 } from "@mui/material";
 import {AirConControlCard} from "../Components/AirConControlCard.tsx";
 import {AirConDisplayCard} from "../Components/AirConDisplayCard.tsx";
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {useAuthMiddleware} from "../Utils/Middleware.tsx";
 import createClient from "openapi-fetch";
 import * as openapi from "../Interfaces/openapi";
 import {useAppSelector} from "../Utils/StoreHooks.ts";
+import useWebSocket from "react-use-websocket";
+import {AirConditionerController} from "../Interfaces/AirConditionerController.ts";
+import {AirConditionerState} from "../Interfaces/AirConditionerState.ts";
 
 interface Room {
     "roomId": string,
@@ -34,6 +37,7 @@ interface Room {
     },
     "checkinStatus": boolean | null
 }
+
 const client = createClient<openapi.paths>();
 export function AirConPanelPage() {
     const authMiddleware = useAuthMiddleware();
@@ -41,14 +45,29 @@ export function AirConPanelPage() {
     client.use(authMiddleware)
     const user = useAppSelector((store) => store.userInfo);
     const disable = useRef(false);
+    const roomData = useRef<AirConditionerState>({
+        cooling: false,
+        opening: false,
+        roomId: '0',
+        speed: 0,
+        targetTemperature: 0,
+        temperature: 0
+    })
     const [roomId, setRoomId] = useState('');
     const [roomList, setRoomList] = useState<Room[]>([]);
+    const [targetState, setTargetState] = useState<AirConditionerController>({
+        "opening": false,
+        "targetTemperature": 0,
+        "speed": 0
+    })
+    const [targetChanged, setTargetChanged] = useState(false);
     const CardContentNoPadding = styled(CardContent)(`
     &:last-child {
         padding-bottom: 0;
     }
     `);
 
+    // 获得全部房间列表
     useEffect(() => {
         const getRooms = async () => {
             const responses = await client.GET('/api/room')
@@ -66,11 +85,11 @@ export function AirConPanelPage() {
             }
         }
         getRooms()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [client]);
 
+    }, []);
+
+    // 针对用户,获得用户当前所在的房间列表
     useEffect(() => {
-
         const getCurrentRoomId = async () => {
             const responses = await client.GET('/api/user/{userId}', {
                 params: {
@@ -87,18 +106,54 @@ export function AirConPanelPage() {
 
         if (user.auth === 'guest') {
             getCurrentRoomId();
-        } else if (user.auth === 'sudo' || user.auth === 'airconAdmin') {
-            // 超管和空管能直接操控空调
-            disable.current = false;
-        } else {
-            // 其他不能操控空调
-            disable.current = true;
-        }
-
+        } else disable.current = !(user.auth === 'sudo' || user.auth === 'airconAdmin');
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [roomList, roomId]);
+    }, [roomList]);
 
-    //  sx={{position:"absolute",width : "10%",height : "10%",top : '2%',left: "50%",transform:"translateX(-50%)"}}
+    const getSocketUrl = useCallback(() => {
+        if(roomId === '') {
+            return 'ws://martina.rrricardo.top/api/airConditioner/ws/0'
+        }
+        return 'ws://martina.rrricardo.top/api/airConditioner/ws/' + roomId;
+    },[roomId]);
+
+    const {
+        lastMessage,
+    } = useWebSocket(getSocketUrl, {
+        onOpen: () => console.log('websocket opened'),
+        retryOnError: true,
+        shouldReconnect: () => true,
+        reconnectAttempts: 10,
+        reconnectInterval: (attemptNumber) =>
+            Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
+    },(roomId !== '' && !(disable.current)));
+    // 当未获取到房间号，或不能操控空调时不连接
+
+    useEffect(() => {
+        if (lastMessage !== null) {
+            roomData.current = JSON.parse(lastMessage.data) as AirConditionerState
+            if(!roomData.current.opening) {
+                // 没开机就不能主动编辑
+                setTargetChanged(false)
+            }
+            if(!targetChanged) {
+                // 没有处于编辑状态，更新控制界面
+                setTargetState({
+                    "opening": roomData.current.opening,
+                    "targetTemperature": roomData.current.targetTemperature,
+                    "speed": roomData.current.speed
+                })
+            } else {
+                setTargetState({
+                    ...targetState,
+                    "opening": roomData.current.opening,
+                })
+            }
+        }
+        console.log(roomData.current)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lastMessage])
+
     return <>
         <Box sx={{position: "relative", width: "100%", height: "100%", display: "flex", alignItems: "center"}}>
 
@@ -130,7 +185,6 @@ export function AirConPanelPage() {
                             </MenuItem>
                         })
                     }
-
                 </Select>
             </FormControl>
 
@@ -157,10 +211,14 @@ export function AirConPanelPage() {
                                 ) : (
                                     <Grid container sx={{position: "relative", height: "100%", width: "100%"}}>
                                         <Grid item xs={8}>
-                                            <AirConDisplayCard roomId={roomId}/>
+                                            <AirConDisplayCard roomData={roomData.current}/>
                                         </Grid>
                                         <Grid item xs={4}>
-                                            <AirConControlCard roomId={roomId}/>
+                                            <AirConControlCard roomData={roomData.current}
+                                                               targetState={targetState}
+                                                               setTargetState={setTargetState}
+                                                               targetChanged={targetChanged}
+                                                               setTargetChanged={setTargetChanged}/>
                                         </Grid>
                                     </Grid>
                                 )
