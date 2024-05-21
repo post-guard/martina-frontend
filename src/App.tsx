@@ -7,6 +7,7 @@ import {RoomStatePage} from "./Pages/RoomStatePage.tsx";
 
 import {ErrorPage2} from "./Pages/ErrorPage2.tsx";
 import {DetailedListPage} from './Pages/DetailedListPage.tsx';
+import {CheckOutPage} from "./Pages/CheckOutPage.tsx";
 import {AirConPanelPage} from "./Pages/AirConPanelPage.tsx";
 import {MonitorPage} from "./Pages/MonitorPage.tsx";
 
@@ -31,8 +32,12 @@ const routers = createBrowserRouter([
                 element: <DetailedListPage/>
             },
             {
-                path: "roomState",
-                element: <RoomStatePage/>
+                path:"roomState",
+                element:<RoomStatePage/>
+            },
+            {
+                path:'checkOut',
+                element:<CheckOutPage/>
             },
             {
                 path: "monitor",
