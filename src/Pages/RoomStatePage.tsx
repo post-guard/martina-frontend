@@ -1,15 +1,16 @@
 import {useEffect, useState} from "react";
 import {Room} from "../Interfaces/Room.ts";
-import RoomList from "../Components/RoomList.tsx";
 import CheckInModal from "../Components/CheckInModal.tsx";
 import createClient from "openapi-fetch";
 import * as openapi from "../Interfaces/openapi";
 import {useAuthMiddleware} from "../Utils/Middleware.tsx";
 import {enqueueSnackbar} from "notistack";
-import {green} from "@mui/material/colors";
-import {Button} from "@mui/material";
+import {Box, Button, Grid} from "@mui/material";
 import {useAppSelector} from "../Utils/StoreHooks.ts";
 import CreateRoomModal from "../Components/CreateRoomModal.tsx";
+import RoomStateCard from "../Components/RoomStateCard.tsx";
+import {green, red} from "@mui/material/colors";
+import DeleteRoomModal from "../Components/DeleteRoomModal.tsx";
 
 
 const client = createClient<openapi.paths>();
@@ -19,6 +20,7 @@ export function RoomStatePage() {
     const [rooms, setRooms] = useState<Room[]>([])
     const [showCheckInModal, setShowCheckInModal] = useState(false);
     const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
+    const [showDeleteRoomModal, setShowDeleteRoomModal] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState<Room>({id:'',name:'',status:'occupied'});
 
     useEffect(() => {
@@ -60,9 +62,6 @@ export function RoomStatePage() {
         }
     }
 
-    const onClickRoomClick = () => {
-        setShowCreateRoomModal(true);
-    }
     const onRegisterModalClose = () => {
         setShowCheckInModal(false);
         refreshRooms();
@@ -70,6 +69,11 @@ export function RoomStatePage() {
 
     const onCreateRoomModalClose = () => {
         setShowCreateRoomModal(false);
+        refreshRooms();
+    }
+
+    const onDeleteModalClose = () => {
+        setShowDeleteRoomModal(false);
         refreshRooms();
     }
 
@@ -84,14 +88,69 @@ export function RoomStatePage() {
     const userInfo = useAppSelector((store) => store.userInfo);
 
     return (
-        <div className={"room-state-page"} style={{
-            position: "relative",
-            width: "100%",
-            height: "100%",
-            background: "gainsboro"
-        }}>
-            <RoomList rooms={rooms} onRoomClick={onRoomClick}>
-            </RoomList>
+        <Box sx={{position: "relative", width: "100%", height: "100%"}}>
+            <Box sx={{
+                position: "relative",
+                width: "100%",
+                height: "10%",
+                boxSizing: "border-box",
+                padding: '5px',
+            }}>
+                {   //超级管理员才能创建/删除房间
+                    userInfo.auth === 'sudo' &&
+                    <Grid container spacing={0}
+                          sx={{position: "relative", width: "100%", height: "100%"}}>
+                        <Grid item xs={5}/>
+                        <Grid item xs={1} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                            <Button
+                                variant="contained"
+                                sx={{backgroundColor:green[700],
+                                    ":hover": {backgroundColor:green[800]},}}
+                                onClick={() => setShowCreateRoomModal(true)}
+                            >
+                                创建房间
+                            </Button>
+                        </Grid>
+
+                        <Grid item xs={1} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                            <Button
+                                variant="contained"
+                                sx={{backgroundColor:red[600],
+                                    ":hover": {backgroundColor:red[900]},
+                                }}
+                                onClick={() => setShowDeleteRoomModal(true)}
+                            >
+                                删除房间
+                            </Button>
+                        </Grid>
+                        <Grid item xs={5}/>
+                    </Grid>
+                }
+            </Box>
+
+            <Box sx={{
+                position: "absolute",
+                width: "100%",
+                top: "10%",
+                height: "90%",
+                boxSizing: "border-box",
+                padding: '10px',
+                overflowY: "auto",
+                display:'flex',
+                justifyContent:'center'
+            }}>
+                <Grid container columnSpacing={2} rowSpacing={3}
+                      sx={{position: "relative", width: "80%", height: "100%"}}>
+                    {
+                        rooms.map((room, index) => {
+                            return <Grid item xs={2.4}
+                                         sx={{position: "relative",alignItems: "center", textAlign: "center"}}>
+                                <RoomStateCard key={index} room={room} onRoomClick={onRoomClick} />
+                            </Grid>
+                        })
+                    }
+                </Grid>
+            </Box>
 
             {
                 showCheckInModal &&
@@ -107,26 +166,12 @@ export function RoomStatePage() {
                 <CreateRoomModal onClose={onCreateRoomModalClose}>
                 </CreateRoomModal>
             }
-            {
-                 userInfo.auth === "sudo" &&
-                <Button
-                    variant='contained'
-                    sx={{
-                        position:'absolute',
-                        right:'5%',
-                        bottom:'10%',
-                        width:'6%',
-                        height:'12%',
-                        borderRadius:'12px',
-                        backgroundColor:green[800],
-                        ":hover": {backgroundColor:green[900]},
-                    }}
-                    onClick={onClickRoomClick}
-                >
-                    创建房间
-                </Button>
-            }
 
-        </div>
+            {
+                showDeleteRoomModal &&
+                <DeleteRoomModal rooms={rooms} onClose={onDeleteModalClose}>
+                </DeleteRoomModal>
+            }
+        </Box>
     )
 }
