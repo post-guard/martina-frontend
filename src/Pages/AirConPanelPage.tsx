@@ -29,7 +29,7 @@ interface Room {
     "roomBaiscTemperature": number,
     "airConditioner": {
         "roomId": string,
-        "opening": boolean,
+        "status": number,
         "temperature": number,
         "targetTemperature": number,
         "speed": number,
@@ -47,7 +47,7 @@ export function AirConPanelPage() {
     const disable = useRef(false);
     const roomData = useRef<AirConditionerState>({
         cooling: false,
-        opening: false,
+        status: 0,
         roomId: '0',
         speed: 0,
         targetTemperature: 0,
@@ -56,7 +56,7 @@ export function AirConPanelPage() {
     const [roomId, setRoomId] = useState('');
     const [roomList, setRoomList] = useState<Room[]>([]);
     const [targetState, setTargetState] = useState<AirConditionerController>({
-        "opening": false,
+        "status": 0,
         "targetTemperature": 0,
         "speed": 0
     })
@@ -132,21 +132,21 @@ export function AirConPanelPage() {
     useEffect(() => {
         if (lastMessage !== null) {
             roomData.current = JSON.parse(lastMessage.data) as AirConditionerState
-            if(!roomData.current.opening) {
+            if(roomData.current.status === 0) {
                 // 没开机就不能主动编辑
                 setTargetChanged(false)
             }
             if(!targetChanged) {
                 // 没有处于编辑状态，更新控制界面
                 setTargetState({
-                    "opening": roomData.current.opening,
+                    "status": roomData.current.status,
                     "targetTemperature": roomData.current.targetTemperature,
                     "speed": roomData.current.speed
                 })
             } else {
                 setTargetState({
                     ...targetState,
-                    "opening": roomData.current.opening,
+                    "status": roomData.current.status,
                 })
             }
         }

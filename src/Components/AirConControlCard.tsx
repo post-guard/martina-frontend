@@ -29,7 +29,7 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
     const client = createClient<openapi.paths>();
     client.use(authMiddleware)
     const roomId = useRef('0')
-    const [powerButtonColor, setPowerButtonColor] = useState(targetState.opening ? '#1976d2' : 'gray')
+    const [powerButtonColor, setPowerButtonColor] = useState(targetState.status !== 0 ? '#1976d2' : 'gray')
 
     useLayoutEffect(() => {
         roomId.current = roomData.roomId;
@@ -50,7 +50,7 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
     }
 
     const handlePowerButton = async () => {
-        if (targetState.opening) {
+        if (targetState.status !== 0) {
             // 关机
             const responses = await client.POST('/api/airConditioner/{roomId}', {
                 params: {
@@ -66,7 +66,7 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
             })
             if (responses.response.status === 200) {
                 setPowerButtonColor('gray');
-                setTargetState({...targetState, opening: false})
+                setTargetState({...targetState, status: 0})
                 enqueueSnackbar("空调已关闭", {
                     variant: "success",
                     autoHideDuration: 1500,
@@ -87,7 +87,7 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
             }
 
         } else {
-            // 开机
+            // 开机或等待
             const responses = await client.POST('/api/airConditioner/{roomId}', {
                 params: {
                     path: {
@@ -102,7 +102,7 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
             })
             if (responses.response.status === 200) {
                 setPowerButtonColor('#1976d2');
-                setTargetState({...targetState, opening: true})
+                setTargetState({...targetState, status: 2})
                 enqueueSnackbar("空调已开启", {
                     variant: "success",
                     autoHideDuration: 1500,
@@ -148,10 +148,11 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
                 }
             },
             body: {
-                open: targetState.opening,
+                open: (targetState.status !== 0),
                 targetTemperature: targetState.targetTemperature,
                 speed: targetState.speed
             }
+            // targetState.status = 0 false 关机   !=0 true 开机
         })
         if (responses.response.status === 200) {
             enqueueSnackbar("发送空调服务请求成功", {
@@ -225,7 +226,7 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
                                  fullWidth={true}
                                  aria-label="温度控制"
                                  sx={{width: "100%", height: "10%"}}
-                                 disabled={!targetState.opening}
+                                 disabled={targetState.status === 0}
                     >
                         <Button onClick={handleTempUpButton}>
                             <KeyboardArrowUp fontSize={"large"}/>
@@ -246,7 +247,7 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
                         fullWidth={true}
                         size={"large"}
                         sx={{width: "100%", height: "10%"}}
-                        disabled={!targetState.opening}
+                        disabled={targetState.status === 0}
                     >
                         <ToggleButton value="0">低速风</ToggleButton>
                         <ToggleButton value="1">中速风</ToggleButton>
@@ -257,7 +258,7 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
                     <Button variant="outlined"
                             sx={{height: "10%", width: "100%"}}
                             onClick={handleSendButton}
-                            disabled={!targetState.opening || !targetChanged}>
+                            disabled={targetState.status === 0 || !targetChanged}>
                         send
                     </Button>
                 </Stack>

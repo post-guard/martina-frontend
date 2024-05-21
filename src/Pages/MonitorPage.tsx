@@ -33,7 +33,7 @@ export function MonitorPage() {
                         },
                         airConState: {
                             cooling: room.airConditioner.cooling,
-                            opening: room.airConditioner.opening,
+                            status: room.airConditioner.status,
                             roomId: room.airConditioner.roomId,
                             speed: room.airConditioner.speed,
                             targetTemperature: room.airConditioner.targetTemperature,
@@ -77,7 +77,7 @@ export function MonitorPage() {
                             },
                             airConState: {
                                 cooling: roomState.cooling,
-                                opening: roomState.opening,
+                                status: roomState.status,
                                 roomId: roomState.roomId,
                                 speed: roomState.speed,
                                 targetTemperature: roomState.targetTemperature,
@@ -125,8 +125,9 @@ export function MonitorPage() {
                 </Grid>
             </Box>
             <Box sx={{
-                position: "relative",
+                position: "absolute",
                 width: "100%",
+                top: "10%",
                 height: "90%",
                 boxSizing: "border-box",
                 padding: '10px',
@@ -137,7 +138,7 @@ export function MonitorPage() {
                     {
                         roomList.map((room) => {
                             return <Grid item xs={2.4} key={room.info.id}
-                                         sx={{display: "flex", alignItems: "center", textAlign: "center"}}>
+                                         sx={{position: "relative",alignItems: "center", textAlign: "center"}}>
                                 <AirConStateCard data={room} key={room.info.id}/>
                             </Grid>
                         })

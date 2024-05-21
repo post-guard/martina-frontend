@@ -28,6 +28,155 @@ export interface paths {
         200: {
           content: never;
         };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/airConditionerManage": {
+    /**
+     * 获得空调系统的配置信息
+     * @description 当空调系统尚未开启时返回400
+     */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["AirConditionerOption"];
+            "application/json": components["schemas"]["AirConditionerOption"];
+            "text/json": components["schemas"]["AirConditionerOption"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+    /**
+     * 修改空调系统的配置信息
+     * @description 当空调系统尚未开启时返回400
+     */
+    put: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["AirConditionerOption"];
+          "text/json": components["schemas"]["AirConditionerOption"];
+          "application/*+json": components["schemas"]["AirConditionerOption"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["AirConditionerOption"];
+            "application/json": components["schemas"]["AirConditionerOption"];
+            "text/json": components["schemas"]["AirConditionerOption"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/airConditionerManage/open": {
+    /** 开启空调系统 */
+    put: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: never;
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/airConditionerManage/close": {
+    /** 关闭空调系统 */
+    put: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: never;
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/airConditionerManage/reset": {
+    /**
+     * 重置空调系统为初始状态
+     * @description 空调系统尚未开启时返回400
+     */
+    post: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: never;
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
       };
     };
   };
@@ -467,11 +616,29 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    AirConditionerOption: {
+      /** Format: double */
+      minTemperature?: number;
+      /** Format: double */
+      maxTemperature?: number;
+      /** Format: double */
+      defaultTemperature?: number;
+      /** Format: double */
+      defaultFanSpeed?: number;
+      /** Format: double */
+      highSpeedPerDegree?: number;
+      /** Format: double */
+      middleSpeedPerDegree?: number;
+      /** Format: double */
+      lowSpeedPerDegree?: number;
+      /** Format: double */
+      backSpeed?: number;
+    };
     AirConditionerRequest: {
       /** @description 开启还是关闭空调 */
       open: boolean;
       /**
-       * Format: float
+       * Format: double
        * @description 要求的目标的温度
        */
       targetTemperature?: number;
@@ -480,26 +647,28 @@ export interface components {
     AirConditionerResponse: {
       /** @description 空调所在房间的ID */
       roomId: string;
-      /** @description 空调是否开启 */
-      opening: boolean;
+      status: components["schemas"]["AirConditionerStatus"];
       /**
-       * Format: float
+       * Format: double
        * @description 房间的当前温度
        */
       temperature: number;
+      /** @description 空调是在制冷还是在制热 */
+      cooling: boolean;
       /**
-       * Format: float
+       * Format: double
        * @description 空调的目标温度
        * 当空调开启时有效
        */
       targetTemperature: number;
       speed: components["schemas"]["FanSpeed"];
-      /**
-       * @description 空调是在制冷还是在制热
-       * 当空调开启时有效
-       */
-      cooling: boolean;
     };
+    /**
+     * Format: int32
+     * @description 空调的状态枚举
+     * @enum {number}
+     */
+    AirConditionerStatus: 0 | 1 | 2;
     CheckinRequest: {
       /** @description 入住的房间号 */
       roomId: string;
@@ -542,12 +711,12 @@ export interface components {
       /** @description 创建的房间名称 */
       roomName: string;
       /**
-       * Format: float
+       * Format: double
        * @description 房间的单价
        */
       pricePerDay: number;
       /**
-       * Format: float
+       * Format: double
        * @description 房间的基础环境温度
        */
       roomBasicTemperature: number;
@@ -563,7 +732,7 @@ export interface components {
      * 0 低速风
      * 1 中速风
      * 2 高速风
-     * @enum {integer}
+     * @enum {number}
      */
     FanSpeed: 0 | 1 | 2;
     /** @description 用户登录请求的传输类 */
@@ -605,12 +774,12 @@ export interface components {
       /** @description 房间的名称 */
       roomName: string;
       /**
-       * Format: float
+       * Format: double
        * @description 房间的单价
        */
       pricePerDay: number;
       /**
-       * Format: float
+       * Format: double
        * @description 房间的基础环境温度
        */
       roomBaiscTemperature: number;
