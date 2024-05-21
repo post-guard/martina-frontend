@@ -54,7 +54,7 @@ export function MonitorPage() {
 
     const {
         lastMessage,
-    } = useWebSocket('ws://martina.rrricardo.top/api/airConditioner/ws/', {
+    } = useWebSocket(SOCKET_URL, {
         onOpen: () => console.log('websocket opened'),
         retryOnError: true,
         shouldReconnect: () => true,

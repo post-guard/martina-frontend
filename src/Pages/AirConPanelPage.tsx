@@ -112,9 +112,9 @@ export function AirConPanelPage() {
 
     const getSocketUrl = useCallback(() => {
         if(roomId === '') {
-            return 'ws://martina.rrricardo.top/api/airConditioner/ws/0'
+            return SOCKET_URL + '0'
         }
-        return 'ws://martina.rrricardo.top/api/airConditioner/ws/' + roomId;
+        return SOCKET_URL + roomId;
     },[roomId]);
 
     const {
