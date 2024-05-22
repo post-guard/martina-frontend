@@ -172,25 +172,16 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
                                         onClick={onClose}>
                                         取消
                                     </Button>
-                                    {
-                                        confirmButtonState ?
-                                            <Button
-                                                variant="contained"
-                                                style={{width: "40%"}}
-                                                onClick={onConfirmClick}>
-                                                确认
-                                            </Button>
-                                            :
-                                            <Button
-                                                variant="contained"
-                                                disabled={true}
-                                                style={{width: "40%"}}
-                                                onClick={onConfirmClick}>
-                                                确认
-                                            </Button>
-                                    }
-                                </Box>
 
+                                    <Button
+                                        variant="contained"
+                                        disabled={!confirmButtonState}
+                                        style={{width: "40%"}}
+                                        onClick={onConfirmClick}>
+                                        确认
+                                    </Button>
+
+                                </Box>
                             </Stack>
                         </Form>
                     </Paper>

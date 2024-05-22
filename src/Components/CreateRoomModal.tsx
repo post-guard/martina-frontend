@@ -129,30 +129,19 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({onClose}) => {
                             <Button
                                 variant="contained"
                                 sx={{ mr: 10 }}
-                                style={{width: "40%", height:'50%'}}
+                                style={{width: "40%"}}
                                 onClick={onClose}>
                                 取消
                             </Button>
 
-                            {
-                                confirmButtonState ?
-                                    <Button
-                                        variant="contained"
-                                        style={{width: "40%", height:'50%'}}
-                                        onClick={onConfirmClick}
-                                    >
-                                        确认
-                                    </Button>
-                                    :
-                                    <Button
-                                        variant="contained"
-                                        disabled={true}
-                                        style={{width: "40%", height:'50%'}}
-                                        onClick={onConfirmClick}
-                                    >
-                                        确认
-                                    </Button>
-                            }
+                            <Button
+                                variant="contained"
+                                disabled={!confirmButtonState}
+                                style={{width: "40%"}}
+                                onClick={onConfirmClick}
+                            >
+                                确认
+                            </Button>
 
                         </Box>
                     </Stack>

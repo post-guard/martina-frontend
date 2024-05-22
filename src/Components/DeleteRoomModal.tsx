@@ -144,7 +144,11 @@ const DeleteRoomModal: FC<DeleteRoomModalProps> = ({rooms, onClose}) => {
                             <Button variant='contained' onClick={() => onClose()} sx={{mr:10, width:'25%'}}>
                                 取消
                             </Button>
-                            <Button disabled={!confirmButtonState} variant='contained' onClick={() => onConfirmClick()} sx={{width:'25%'}}>
+                            <Button
+                                disabled={!confirmButtonState}
+                                variant='contained'
+                                onClick={() => onConfirmClick()}
+                                sx={{width:'25%'}}>
                                 确认
                             </Button>
                         </Box>

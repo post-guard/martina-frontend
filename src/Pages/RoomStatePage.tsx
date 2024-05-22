@@ -143,7 +143,7 @@ export function RoomStatePage() {
                       sx={{position: "relative", width: "80%", height: "100%"}}>
                     {
                         rooms.map((room, index) => {
-                            return <Grid item xs={2.4}
+                            return <Grid item xs={2.4} key={index}
                                          sx={{position: "relative",alignItems: "center", textAlign: "center"}}>
                                 <RoomStateCard key={index} room={room} onRoomClick={onRoomClick} />
                             </Grid>
