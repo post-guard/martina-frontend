@@ -11,7 +11,7 @@ import {
     IconButton
 } from "@mui/material";
 import {KeyboardArrowUp, KeyboardArrowDown, PowerSettingsNew} from '@mui/icons-material';
-import React, {useLayoutEffect, useRef, useState} from "react";
+import React, {useLayoutEffect, useRef} from "react";
 import createClient from "openapi-fetch";
 import * as openapi from "../Interfaces/openapi";
 import {useAuthMiddleware} from "../Utils/Middleware.tsx";
@@ -29,11 +29,11 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
     const client = createClient<openapi.paths>();
     client.use(authMiddleware)
     const roomId = useRef('0')
-    const [powerButtonColor, setPowerButtonColor] = useState(targetState.status !== 0 ? '#1976d2' : 'gray')
 
+    // const [powerButtonColor, setPowerButtonColor] = useState(targetState.status !== 0 ? '#1976d2' : 'gray')
+    const powerButtonColor = targetState.status !== 0 ? '#1976d2' : 'gray'
     useLayoutEffect(() => {
         roomId.current = roomData.roomId;
-
     }, [roomData]);
 
     const handleWindSpeedChange = (
@@ -65,8 +65,8 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
                 }
             })
             if (responses.response.status === 200) {
-                setPowerButtonColor('gray');
-                setTargetState({...targetState, status: 0})
+                // setPowerButtonColor('gray');
+                // setTargetState({...targetState, status: 0})
                 enqueueSnackbar("空调已关闭", {
                     variant: "success",
                     autoHideDuration: 1500,
@@ -101,8 +101,8 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
                 }
             })
             if (responses.response.status === 200) {
-                setPowerButtonColor('#1976d2');
-                setTargetState({...targetState, status: 2})
+                // setPowerButtonColor('#1976d2');
+                // setTargetState({...targetState, status: 2})
                 enqueueSnackbar("空调已开启", {
                     variant: "success",
                     autoHideDuration: 1500,

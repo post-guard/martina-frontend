@@ -31,7 +31,7 @@ export function LoginPage() {
             // 登录成功
             enqueueSnackbar("登录成功,即将跳转页面", {
                 variant: "success",
-                autoHideDuration: 3000,
+                autoHideDuration: 500,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center',
@@ -44,7 +44,7 @@ export function LoginPage() {
             setTimeout(() => {
                 navigate('/')
                 setLoginButtonState(true);
-            }, 3000)
+            }, 500)
 
         } else if (responses.response.status === 400) {
             // 登录失败

@@ -617,22 +617,52 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     AirConditionerOption: {
-      /** Format: double */
-      minTemperature?: number;
-      /** Format: double */
-      maxTemperature?: number;
-      /** Format: double */
-      defaultTemperature?: number;
-      /** Format: double */
-      defaultFanSpeed?: number;
-      /** Format: double */
-      highSpeedPerDegree?: number;
-      /** Format: double */
-      middleSpeedPerDegree?: number;
-      /** Format: double */
-      lowSpeedPerDegree?: number;
-      /** Format: double */
-      backSpeed?: number;
+      /** @description 当前空调系统是制冷还是制热 */
+      cooling: boolean;
+      /**
+       * Format: double
+       * @description 当前空调系统的最低温度
+       */
+      minTemperature: number;
+      /**
+       * Format: double
+       * @description 当前空调系统的最高温度
+       */
+      maxTemperature: number;
+      /**
+       * Format: double
+       * @description 当前空调系统的默认温度
+       */
+      defaultTemperature: number;
+      /**
+       * Format: double
+       * @description 当前空调系统的默认风速
+       */
+      defaultFanSpeed: number;
+      /**
+       * Format: double
+       * @description 高速风导致温度变化的速度
+       * 单位为分每度
+       */
+      highSpeedPerDegree: number;
+      /**
+       * Format: double
+       * @description 中速风导致温度变化的速度
+       * 单位为分每度
+       */
+      middleSpeedPerDegree: number;
+      /**
+       * Format: double
+       * @description 低速风导致温度变化的速度
+       * 单位为分每度
+       */
+      lowSpeedPerDegree: number;
+      /**
+       * Format: double
+       * @description 回温的速度
+       * 单位为度每分
+       */
+      backSpeed: number;
     };
     AirConditionerRequest: {
       /** @description 开启还是关闭空调 */
@@ -666,7 +696,10 @@ export interface components {
     /**
      * Format: int32
      * @description 空调的状态枚举
-     * @enum {number}
+     * 0 空调处在关闭状态
+     * 1 空调处在等待状态
+     * 2 空调处在工作状态
+     * @enum {integer}
      */
     AirConditionerStatus: 0 | 1 | 2;
     CheckinRequest: {
@@ -732,7 +765,7 @@ export interface components {
      * 0 低速风
      * 1 中速风
      * 2 高速风
-     * @enum {number}
+     * @enum {integer}
      */
     FanSpeed: 0 | 1 | 2;
     /** @description 用户登录请求的传输类 */

@@ -34,7 +34,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({onClose}) => {
         if(response.response.status === 201) {
             enqueueSnackbar("创建房间成功，即将跳转页面", {
                 variant: "success",
-                autoHideDuration:2000,
+                autoHideDuration:500,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center',
@@ -42,12 +42,12 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({onClose}) => {
             });
             setTimeout(() => {
                 onClose();
-            }, 2000)
+            }, 500)
         }
         else {
             enqueueSnackbar("创建房间失败", {
                 variant: "error",
-                autoHideDuration:2000,
+                autoHideDuration:500,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center',

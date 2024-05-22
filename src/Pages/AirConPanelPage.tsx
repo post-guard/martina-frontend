@@ -150,7 +150,6 @@ export function AirConPanelPage() {
                 })
             }
         }
-        console.log(roomData.current)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lastMessage])
 

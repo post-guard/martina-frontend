@@ -10,6 +10,8 @@ import {AirConStateCard} from "../Components/AirConStateCard.tsx";
 import useWebSocket from "react-use-websocket";
 import {AirConditionerState} from "../Interfaces/AirConditionerState.ts";
 import {MonitorRoomState} from "../Interfaces/MonitorRoomState.ts";
+import {enqueueSnackbar} from "notistack";
+import SystemSettingModal from "../Components/SystemSettingModal.tsx";
 
 const client = createClient<openapi.paths>();
 
@@ -17,6 +19,26 @@ export function MonitorPage() {
     const authMiddleware = useAuthMiddleware();
     client.use(authMiddleware)
     const [roomList, setRoomList] = useState<MonitorRoomState[]>([]);
+
+    const [showSettingModel, setShowSettingModel] = useState(false)
+
+    const [systemStatus, setSystemStatus] = useState<openapi.components['schemas']['AirConditionerOption']>(
+        {
+            cooling: true,
+            minTemperature: 0,
+            maxTemperature: 0,
+            defaultTemperature: 0,
+            defaultFanSpeed: 0,
+            highSpeedPerDegree: 0,
+            middleSpeedPerDegree: 0,
+            lowSpeedPerDegree: 0,
+            backSpeed: 0
+        }
+    )
+
+    const [systemControlButtonStatus, setSystemControlButtonStatus] = useState(false)
+    // true -> 系统开机,显示关机按钮
+    // false -> 系统关机,显示开机按钮
 
     // 获得全部房间列表
     useEffect(() => {
@@ -43,7 +65,7 @@ export function MonitorPage() {
                     newRoomList.push(newRoom);
                 }
                 newRoomList.sort((a, b) => {
-                    return a.info.id > b.info.id ? -1 : 1
+                    return a.info.id > b.info.id ? 1 : -1
                 })
                 setRoomList(newRoomList);
             }
@@ -51,6 +73,43 @@ export function MonitorPage() {
         getRooms()
 
     }, []);
+
+    useEffect(() => {
+        const getSystemStatus = async () => {
+            const responses = await client.GET('/api/airConditionerManage')
+            if (responses.response.status === 200 && responses.data !== undefined) {
+                setSystemStatus({
+                    cooling: responses.data.cooling,
+                    minTemperature: responses.data.minTemperature,
+                    maxTemperature: responses.data.maxTemperature,
+                    defaultTemperature: responses.data.defaultTemperature,
+                    defaultFanSpeed: responses.data.defaultFanSpeed,
+                    highSpeedPerDegree: responses.data.highSpeedPerDegree,
+                    middleSpeedPerDegree: responses.data.middleSpeedPerDegree,
+                    lowSpeedPerDegree: responses.data.lowSpeedPerDegree,
+                    backSpeed: responses.data.backSpeed
+                })
+                setSystemControlButtonStatus(true)
+            } else {
+                setSystemStatus({
+                    cooling: true,
+                    minTemperature: 0,
+                    maxTemperature: 0,
+                    defaultTemperature: 0,
+                    defaultFanSpeed: 0,
+                    highSpeedPerDegree: 0,
+                    middleSpeedPerDegree: 0,
+                    lowSpeedPerDegree: 0,
+                    backSpeed: 0
+                })
+                setSystemControlButtonStatus(false)
+            }
+
+        }
+
+        getSystemStatus();
+    }, [showSettingModel])
+
 
     const {
         lastMessage,
@@ -90,12 +149,86 @@ export function MonitorPage() {
                 }
             }
             newRoomList.sort((a, b) => {
-                return a.info.id > b.info.id ? -1 : 1
+                return a.info.id > b.info.id ? 1 : -1
             })
             setRoomList(newRoomList)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lastMessage])
+
+    const handleTurnOnButton = async () => {
+        const response = await client.PUT('/api/airConditionerManage/open');
+        if (response.response.status === 200) {
+            enqueueSnackbar("空调系统启动成功", {
+                variant: "success",
+                autoHideDuration: 1000,
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                }
+            });
+            setShowSettingModel(true);
+            setSystemControlButtonStatus(true)
+        } else {
+            enqueueSnackbar("空调系统启动失败", {
+                variant: "error",
+                autoHideDuration: 1000,
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                }
+            });
+            setSystemControlButtonStatus(false)
+        }
+    }
+
+    const handleTurnOffButton = async () => {
+        const response = await client.PUT('/api/airConditionerManage/close');
+        if (response.response.status === 200) {
+            enqueueSnackbar("空调系统关闭成功", {
+                variant: "success",
+                autoHideDuration: 1000,
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                }
+            });
+            setSystemControlButtonStatus(false)
+        } else {
+            enqueueSnackbar("空调系统关闭失败", {
+                variant: "error",
+                autoHideDuration: 1000,
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                }
+            });
+            setSystemControlButtonStatus(true)
+        }
+    }
+
+    const handleResetButton = async () => {
+        const responses = await client.POST('/api/airConditionerManage/reset');
+        if (responses.response.status === 200) {
+            enqueueSnackbar("空调系统重置成功", {
+                variant: "success",
+                autoHideDuration: 1500,
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                }
+            });
+        } else {
+            enqueueSnackbar("空调系统重置失败", {
+                variant: "error",
+                autoHideDuration: 1500,
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                }
+            });
+        }
+    }
 
 
     return <>
@@ -109,19 +242,39 @@ export function MonitorPage() {
             }}>
                 <Grid container spacing={0}
                       sx={{position: "relative", width: "100%", height: "100%"}}>
-                    <Grid item xs={5}/>
+                    <Grid item xs={4}/>
                     <Grid item xs={1} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Button variant="outlined">
-                            开机
-                        </Button>
+                        {
+                            systemControlButtonStatus ?
+                                <Button variant="outlined" onClick={handleTurnOffButton} color={'warning'}>
+                                    关机
+                                </Button>
+                                :
+                                <Button variant="outlined" onClick={handleTurnOnButton} color={'primary'}>
+                                    开机
+                                </Button>
+                        }
+
+                    </Grid>
+
+                    <Grid item xs={2} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        {
+                            systemControlButtonStatus ?
+                                <Button variant="outlined" onClick={()=>setShowSettingModel(true)} color={'primary'}>
+                                    配置
+                                </Button>
+                                :
+                                <></>
+                        }
+
                     </Grid>
 
                     <Grid item xs={1} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <Button variant="outlined">
+                        <Button variant="outlined" onClick={handleResetButton}>
                             重置
                         </Button>
                     </Grid>
-                    <Grid item xs={5}/>
+                    <Grid item xs={4}/>
                 </Grid>
             </Box>
             <Box sx={{
@@ -138,7 +291,7 @@ export function MonitorPage() {
                     {
                         roomList.map((room) => {
                             return <Grid item xs={2.4} key={room.info.id}
-                                         sx={{position: "relative",alignItems: "center", textAlign: "center"}}>
+                                         sx={{position: "relative", alignItems: "center", textAlign: "center"}}>
                                 <AirConStateCard data={room} key={room.info.id}/>
                             </Grid>
                         })
@@ -147,5 +300,9 @@ export function MonitorPage() {
                 </Grid>
             </Box>
         </Box>
+        <SystemSettingModal
+            defaultStatus={systemStatus}
+            open={showSettingModel}
+            onClose={setShowSettingModel}/>
     </>
 }
