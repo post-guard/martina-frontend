@@ -13,6 +13,6 @@ export default defineConfig({
         }
     },
     define: {
-        SOCKET_URL: JSON.stringify('ws://martina.rrricardo.top/api/airConditioner/ws/')
+        SOCKET_URL: JSON.stringify('ws://martina.rrricardo.top/api/')
     },
 })

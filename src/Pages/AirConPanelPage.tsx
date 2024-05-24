@@ -112,9 +112,9 @@ export function AirConPanelPage() {
 
     const getSocketUrl = useCallback(() => {
         if(roomId === '') {
-            return SOCKET_URL + '0'
+            return SOCKET_URL+ 'airConditioner/ws/' + '0'
         }
-        return SOCKET_URL + roomId;
+        return SOCKET_URL + 'airConditioner/ws/' + roomId;
     },[roomId]);
 
     const {

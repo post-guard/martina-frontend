@@ -68,10 +68,6 @@ export function Index() {
                     url: "air-control"
                 },
                 {
-                    name: "TestPage2",
-                    url: "test2"
-                },
-                {
                     name: "详单",
                     url: "detailList"
                 }

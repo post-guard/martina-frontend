@@ -113,7 +113,7 @@ export function MonitorPage() {
 
     const {
         lastMessage,
-    } = useWebSocket(SOCKET_URL, {
+    } = useWebSocket(SOCKET_URL + 'airConditioner/ws/', {
         onOpen: () => console.log('websocket opened'),
         retryOnError: true,
         shouldReconnect: () => true,

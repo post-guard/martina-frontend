@@ -16,6 +16,7 @@ import {useAppSelector} from "../Utils/StoreHooks.ts";
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {cleanState} from "../Stores/UserSlice.ts";
+import ClockPatch from "../Components/ClockPatch.tsx";
 
 
 const settings = ['Logout'];
@@ -148,6 +149,10 @@ export default function SystemAppBar({pages, setChildPage}: {
                                 {page.name}
                             </Button>
                         ))}
+                    </Box>
+
+                    <Box sx={{flexGrow: 0.1, display: {xs: 'none', md: 'flex'}}}>
+                        <ClockPatch/>
                     </Box>
 
                     <Box sx={{flexGrow: 0.1, display: {xs: 'none', md: 'flex'}}}>
