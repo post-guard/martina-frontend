@@ -1,14 +1,13 @@
+import {CheckInRecord} from "../Interfaces/CheckInRecord.ts";
 import {FC} from "react";
 import {Button, Modal, Paper, Stack, Typography} from "@mui/material";
-import {CheckInRecord} from "../Interfaces/CheckInRecord.ts";
 
-interface DetailFormModalProps {
-    checkInRecord: CheckInRecord,
-    onClose: () => void
+interface BillModalProps {
+    checkInRecords: CheckInRecord[],
+    onClose: () => void;
 }
 
-const DetailFormModal: FC<DetailFormModalProps> = ({checkInRecord, onClose}) => {
-
+const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
     return (
         <>
             <Modal open={true}>
@@ -29,18 +28,16 @@ const DetailFormModal: FC<DetailFormModalProps> = ({checkInRecord, onClose}) => 
                                    display: "flex",
                                    justifyContent: "center",
                                    alignItems: "center"}}>
-                            <Typography variant={'h3'}>详单</Typography>
-                            <Typography>详单内容</Typography>
-                            <Typography>checkInRecord: 房间id:{checkInRecord.roomId}......</Typography>
-                            <Button variant='contained' onClick={onClose}>
-                                确认
-                            </Button>
+                            <Typography variant={'h3'}>账单</Typography>
+                            <Typography>获取到的checkInRecords长度:{checkInRecords.length}</Typography>
+                            <Button variant='contained' onClick={onClose}>关闭</Button>
+                            <Button variant='contained'>确认结账</Button>
                         </Stack>
                     </Paper>
                 </div>
             </Modal>
         </>
-    )
+)
 }
 
-export default DetailFormModal;
+export default BillModal;

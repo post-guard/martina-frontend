@@ -1,4 +1,4 @@
-import {Box, Button, FormControl, InputBase, InputLabel, Select, Stack, TextField} from "@mui/material";
+import {Box, FormControl, InputBase, InputLabel, Select, Stack, TextField} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import {Search} from "@mui/icons-material";
 import createClient from "openapi-fetch";
@@ -9,17 +9,29 @@ import {enqueueSnackbar} from "notistack";
 import {CheckInRecord} from "../Interfaces/CheckInRecord.ts";
 import dayjs from "dayjs";
 import CheckInRecordList from "../Components/CheckInRecordList.tsx";
+import DetailFormModal from "../Components/DetailFormModal.tsx";
+
+interface User {
+    id: string,
+    name:string
+}
 
 const client = createClient<openapi.paths>();
 export function CheckOutPage() {
     const authMiddleware = useAuthMiddleware();
+    const [user, setUser] = useState<User>({id: "", name: ""})
     const [checkInRecords, setCheckInRecords] = useState<CheckInRecord[]>([]);
+    const [selectedRecord, setSelectedRecord] = useState<CheckInRecord>({
+        userId: "", checkinId:'', beginTime: 0, checkout: false, endTime: 0, roomId: "", roomName: ""
+    });
+    //要展示的类型: all | unCheckOUt | checkOut
     const [displayType, setDisplayType] = useState('unCheckOut');
     const [searchFormData, setSearchFormData] = useState({
         'userId': "",
         'beginTime': "",
         'endTime': ""
     });
+    const [showDetailModal, setShowDetailModal] = useState(false);
 
     const onSearchClick = async () => {
         if(searchFormData.userId === "") {
@@ -35,9 +47,14 @@ export function CheckOutPage() {
             return;
         }
 
+        getUserInfo().then(curUser => {
+            setUser(curUser);
+        });
+
         getCheckInRecords().then(newRecords => {
-            setCheckInRecords(newRecords);
-            if(newRecords.length === 0) {
+            const records = filterResults(newRecords);
+            setCheckInRecords(records);
+            if(records.length === 0) {
                 enqueueSnackbar("没有查到任何内容！", {
                     variant: "warning",
                     autoHideDuration:3000,
@@ -48,6 +65,22 @@ export function CheckOutPage() {
                 });
             }
         });
+    }
+
+    async function getUserInfo(): Promise<User> {
+        const response = await client.GET('/api/user/{userId}', {
+            params: {
+                path: {
+                    userId:searchFormData.userId
+                }
+            }
+        });
+
+        if(response.response.status == 200 && response.data != undefined) {
+            return {id: searchFormData.userId, name: response.data.name}
+        }
+
+        return {id: searchFormData.userId, name: ''};
     }
 
     async function getCheckInRecords(): Promise<CheckInRecord[]> {
@@ -73,14 +106,13 @@ export function CheckOutPage() {
                     }
                 });
 
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const {roomId, userId, ...left} = record;
 
                 if(responseForRoom.response.status == 200 && responseForRoom.data !== undefined) {
-                    return {...left, roomName:responseForRoom.data.roomName}
+
+                    return {...record, roomName:responseForRoom.data.roomName}
                 }
 
-                return {...left, roomName:""};
+                return {...record, roomName:""};
             });
 
             return await Promise.all(roomPromises);
@@ -89,15 +121,20 @@ export function CheckOutPage() {
         return [];
     }
 
-    const filterResults = () => {
+    const filterResults = (records: CheckInRecord[]) => {
         if(displayType === 'checkOut') {
-            return checkInRecords.filter(record => record.checkout);
+            return records.filter(record => record.checkout);
         }
         else if(displayType === 'unCheckOut'){
-            return checkInRecords.filter(record => !record.checkout);
+            return records.filter(record => !record.checkout);
         }
 
-        return checkInRecords;
+        return records;
+    }
+
+    const openDetailListModal = (selectedCheckInRecord: CheckInRecord) => {
+        setSelectedRecord(selectedCheckInRecord);
+        setShowDetailModal(true);
     }
 
     client.use(authMiddleware);
@@ -112,7 +149,7 @@ export function CheckOutPage() {
                 justifyContent:'center'
             }}
         >
-            <Stack spacing={5} sx={{ height: '100%', width:'60%', padding: "2rem 2rem 2rem 2rem", alignItems:'center'}}>
+            <Stack spacing={3} sx={{ height: '100%', width:'60%', padding: "2rem 2rem 2rem 2rem", alignItems:'center'}}>
                 <Box sx={{
                     padding: 2,
                     display:'flex',
@@ -122,7 +159,7 @@ export function CheckOutPage() {
                     border:'2px solid black'
                 }}>
                     <InputBase
-                        placeholder='身份证号'
+                        placeholder='波普特用户号'
                         style={{width:'100%', height:'100%'}}
                         value={searchFormData.userId}
                         onChange={(e) => setSearchFormData({...searchFormData, userId: e.target.value})}
@@ -176,29 +213,26 @@ export function CheckOutPage() {
 
                 <Box sx={{
                     position:'absolute',
-                    top:'30%',
-                    width:'48%',
-                    height:'50%',
+                    top:'25%',
+                    width:'46%',
+                    height:'70%',
                 }}>
-                    <CheckInRecordList records={filterResults()}>
+                    <CheckInRecordList
+                        records={checkInRecords}
+                        userId={user.id}
+                        userName={user.name}
+                        openDetailListModal={() => openDetailListModal(selectedRecord)}>
                     </CheckInRecordList>
                 </Box>
 
 
                 {
-                    filterResults().length > 0 &&
-                    <Button variant='contained'
-                            style={{
-                                position:'absolute',
-                                bottom:'3%',
-                                right:'26%',
-                                width:'5%',
-                                height:'8%'
-                    }}>
-                        确认
-                    </Button>
+                    showDetailModal &&
+                    <DetailFormModal
+                        checkInRecord={selectedRecord}
+                        onClose={() => setShowDetailModal(false)}>
+                    </DetailFormModal>
                 }
-
             </Stack>
         </div>
     )

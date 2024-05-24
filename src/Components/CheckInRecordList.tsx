@@ -1,18 +1,20 @@
 import {CheckInRecord} from "../Interfaces/CheckInRecord.ts";
-import {FC, useState} from "react";
+import {ChangeEvent, FC, useState} from "react";
 import dayjs from "dayjs";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import {Button, Checkbox} from "@mui/material";
-import DetailFormModal from "./DetailFormModal.tsx";
+import {Box, Button, Checkbox, Stack, Typography} from "@mui/material";
+import BillModal from "./BillModal.tsx";
 
 interface CheckInRecordListProps {
-    records: CheckInRecord[]
+    records: CheckInRecord[],
+    userId: string,
+    userName: string,
+    openDetailListModal:(selectedRecord:CheckInRecord) => void
 }
 
-const CheckInRecordList: FC<CheckInRecordListProps> = ({records}) => {
-    const [showDetailModal, setShowDetailModal] = useState(false);
-    const [curCheckInId, setCurCheckInId] = useState("");
-    const checkInIds: string[] = [];
+const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userName, openDetailListModal}) => {
+    const [selectedRecords, setSelectedRecords] = useState<CheckInRecord[]>([]);
+    const [showBillModal, setShowBillModal] = useState(false);
 
     const columns:GridColDef[] = [
         {
@@ -23,7 +25,8 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records}) => {
                 const { row } = params;
                 if (row.type === '未结账') {
                     return (
-                        <Checkbox/>
+                        <Checkbox checked={selectedRecords.includes(records[row.id])}
+                            onChange={handleOnChange(records[row.id])}/>
                     );
                 }
 
@@ -43,7 +46,7 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records}) => {
             renderCell:(params) => {
                 const {row} = params;
                 return (
-                    <Button variant='contained' onClick={() => {setShowDetailModal(true); setCurCheckInId(checkInIds[row.id])}}>
+                    <Button variant='contained' onClick={() => {openDetailListModal(records[row.id])}}>
                         详单
                     </Button>
                 )
@@ -53,9 +56,6 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records}) => {
 
 
     const rows = records.map((record, index) => {
-        //保存checkInId
-        checkInIds.push(record.checkinId);
-
         return {
             'id': index,
             'date': dayjs(record.beginTime * 1000).format('YYYY-MM-DD') + '至' + dayjs(record.endTime * 1000).format('YYYY-MM-DD'),
@@ -65,28 +65,52 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records}) => {
         }
     });
 
+    const handleOnChange = (record: CheckInRecord) => (event: ChangeEvent<HTMLInputElement>) => {
+        const isChecked = event.target.checked;
+        if(isChecked) {
+            setSelectedRecords([...selectedRecords, record]);
+        }
+        else {
+            setSelectedRecords(selectedRecords.filter((curRecord) => curRecord !== record));
+        }
+    }
+
     return (
         <div style={{width:'100%', height:'100%'}}>
             {
                 records.length > 0 &&
-                <DataGrid
-                    rows={rows}
-                    columns={columns}
-                    disableRowSelectionOnClick
-                    sx={{
-                        [`&.MuiDataGrid-root .MuiDataGrid-cell:focus`]: {
-                            outline: 'none',
-                        },
-                        width:'100%',
-                        height:'100%'
-                    }}
-                />
+                <Stack spacing={1} sx={{width:'100%', height:'100%'}}>
+                    <Box sx={{wide:'100%', height:'10%', display:'flex', alignItems:'center'}}>
+                        <Typography sx={{mr:10}}>姓名: {userName}</Typography>
+                        <Typography>波普特号: {userId}</Typography>
+                    </Box>
+                    <DataGrid
+                        rows={rows}
+                        columns={columns}
+                        disableRowSelectionOnClick
+                        sx={{
+                            [`&.MuiDataGrid-root .MuiDataGrid-cell:focus`]: {
+                                outline: 'none',
+                            },
+                            width:'100%',
+                            height:'70%'
+                        }}
+                    />
+                    <Box sx={{wide:'100%', height:'10%', display:'flex', justifyContent:'flex-end'}}>
+                        <Button
+                            variant='contained'
+                            sx={{width:'10%'}}
+                            onClick={() => setShowBillModal(true)}>
+                            确认
+                        </Button>
+                    </Box>
+                </Stack>
             }
 
             {
-                showDetailModal &&
-                <DetailFormModal checkInId={curCheckInId} onClose={() => setShowDetailModal(false)}>
-                </DetailFormModal>
+                showBillModal &&
+                <BillModal checkInRecords={selectedRecords} onClose={() => setShowBillModal(false)}>
+                </BillModal>
             }
         </div>
     )
