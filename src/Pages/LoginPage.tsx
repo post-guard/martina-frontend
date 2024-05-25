@@ -68,7 +68,8 @@ export function LoginPage() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            background: "gainsboro"
+            // background: "gainsboro",
+            background: 'linear-gradient(135deg, #c7e9fb55, #a6defa88, #80d4f955, #5bc9f888, #35bef755)'
         }}>
             <div className={"login-page-container"}
                  style={{position: "absolute", width: "100%", height: "60%"}}>
@@ -76,7 +77,7 @@ export function LoginPage() {
                       style={{width: "100%", height: "100%"}}>
                     <Grid item sm={4} xs={0}/>
                     <Grid item sm={4} xs={12}>
-                        <Paper style={{width: '100%', height: '100%'}}>
+                        <Paper style={{width: '100%', height: '100%',background: 'rgba(255, 255, 255, .2)', backdropFilter: 'blur(10px)'}}>
                             <Form>
                                 <Stack spacing={6}
                                        sx={{padding: "4rem 2rem 4rem 2rem"}}
@@ -116,7 +117,7 @@ export function LoginPage() {
                                         loginButtonState ?
                                             <Button variant="contained"
                                                     size="large"
-                                                    style={{width: "80%"}}
+                                                    style={{width: "80%",background: 'linear-gradient(45deg, #66c7e9fb, #22a6defa, #1180d4f9,  #35bef7)'}}
                                                     onClick={onLoginButtonClick}>
                                                 登录
                                             </Button>
