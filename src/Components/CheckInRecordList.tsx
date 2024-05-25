@@ -1,5 +1,5 @@
 import {CheckInRecord} from "../Interfaces/CheckInRecord.ts";
-import {ChangeEvent, FC, useState} from "react";
+import {ChangeEvent, FC, useEffect, useState} from "react";
 import dayjs from "dayjs";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import {Box, Button, Checkbox, Stack, Typography} from "@mui/material";
@@ -65,6 +65,10 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userNam
         }
     });
 
+    useEffect(() => {
+        setSelectedRecords([]);
+    }, [records])
+
     const handleOnChange = (record: CheckInRecord) => (event: ChangeEvent<HTMLInputElement>) => {
         const isChecked = event.target.checked;
         if(isChecked) {
@@ -73,6 +77,12 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userNam
         else {
             setSelectedRecords(selectedRecords.filter((curRecord) => curRecord !== record));
         }
+    }
+
+    const onBillModalClose = () => {
+        //应该还需要触发checkIn列表的更新
+        setSelectedRecords([]);
+        setShowBillModal(false);
     }
 
     return (
@@ -109,7 +119,7 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userNam
 
             {
                 showBillModal &&
-                <BillModal checkInRecords={selectedRecords} onClose={() => setShowBillModal(false)}>
+                <BillModal checkInRecords={selectedRecords} onClose={onBillModalClose}>
                 </BillModal>
             }
         </div>
