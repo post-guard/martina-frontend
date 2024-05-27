@@ -12,16 +12,19 @@ import {AirConditionerState} from "../Interfaces/AirConditionerState.ts";
 import {MonitorRoomState} from "../Interfaces/MonitorRoomState.ts";
 import {enqueueSnackbar} from "notistack";
 import SystemSettingModal from "../Components/SystemSettingModal.tsx";
+import {useAppSelector} from "../Utils/StoreHooks.ts";
+import TestConditionModal from "../Components/TestConditionModal.tsx";
 
 const client = createClient<openapi.paths>();
 
 export function MonitorPage() {
     const authMiddleware = useAuthMiddleware();
     client.use(authMiddleware)
+    const userAuth = (useAppSelector((store) => store.userInfo.auth));
     const [roomList, setRoomList] = useState<MonitorRoomState[]>([]);
 
     const [showSettingModel, setShowSettingModel] = useState(false)
-
+    const [showTestModel, setShowTestModel] = useState(false)
     const [systemStatus, setSystemStatus] = useState<openapi.components['schemas']['AirConditionerOption']>(
         {
             cooling: true,
@@ -266,7 +269,7 @@ export function MonitorPage() {
                     <Grid item xs={2} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         {
                             systemControlButtonStatus ?
-                                <Button variant="outlined" onClick={()=>setShowSettingModel(true)} color={'primary'}>
+                                <Button variant="outlined" onClick={() => setShowSettingModel(true)} color={'primary'}>
                                     配置
                                 </Button>
                                 :
@@ -280,7 +283,22 @@ export function MonitorPage() {
                             重置
                         </Button>
                     </Grid>
-                    <Grid item xs={4}/>
+
+                    {userAuth === 'sudo' ? (<>
+                            <Grid item xs={2} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                <Button variant="outlined"
+                                        onClick={() => setShowTestModel(true)}
+                                        color={'secondary'}>
+                                    测试脚本
+                                </Button>
+                            </Grid>
+                            <Grid item xs={2}/>
+                        </>
+
+                    ) : (
+                        <Grid item xs={4}/>
+                    )}
+
                 </Grid>
             </Box>
             <Box sx={{
@@ -310,5 +328,8 @@ export function MonitorPage() {
             defaultStatus={systemStatus}
             open={showSettingModel}
             onClose={setShowSettingModel}/>
+        <TestConditionModal
+            open={showTestModel}
+            onClose={setShowTestModel}/>
     </>
 }

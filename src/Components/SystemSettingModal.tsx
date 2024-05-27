@@ -121,8 +121,8 @@ const SystemSettingModal = ({defaultStatus, open, onClose}: {
                                     cooling: event.target.value === '1'
                                 })}
                             >
-                                <MenuItem value={1}>制冷</MenuItem>
-                                <MenuItem value={2}>制热</MenuItem>
+                                <MenuItem value={'1'}>制冷</MenuItem>
+                                <MenuItem value={'2'}>制热</MenuItem>
                             </Select>
                         </FormControl>
                         <Grid container spacing={0} sx={{width: "75%"}}>
