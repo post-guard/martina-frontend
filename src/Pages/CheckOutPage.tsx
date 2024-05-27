@@ -221,7 +221,7 @@ export function CheckOutPage() {
                         records={checkInRecords}
                         userId={user.id}
                         userName={user.name}
-                        openDetailListModal={() => openDetailListModal(selectedRecord)}>
+                        openDetailListModal={openDetailListModal}>
                     </CheckInRecordList>
                 </Box>
 
