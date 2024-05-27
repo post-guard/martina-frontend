@@ -16,6 +16,7 @@ interface CheckInRecordListProps {
 const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userName, openDetailListModal, refresh}) => {
     const [selectedRecords, setSelectedRecords] = useState<CheckInRecord[]>([]);
     const [showBillModal, setShowBillModal] = useState(false);
+    const [disableConfirmButton, setDisableConfirmButton] = useState(true);
 
     const columns:GridColDef[] = [
         {
@@ -68,15 +69,27 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userNam
 
     useEffect(() => {
         setSelectedRecords([]);
+        setDisableConfirmButton(true);
     }, [records])
 
     const handleOnChange = (record: CheckInRecord) => (event: ChangeEvent<HTMLInputElement>) => {
         const isChecked = event.target.checked;
+        let temp;
+
         if(isChecked) {
-            setSelectedRecords([...selectedRecords, record]);
+            temp = [...selectedRecords, record];
         }
         else {
-            setSelectedRecords(selectedRecords.filter((curRecord) => curRecord !== record));
+            temp = selectedRecords.filter((curRecord) => curRecord !== record);
+        }
+
+        setSelectedRecords(temp);
+        //有勾选记录时才能确认
+        if(temp.length > 0) {
+            setDisableConfirmButton(false);
+        }
+        else {
+            setDisableConfirmButton(true);
         }
     }
 
@@ -110,8 +123,10 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userNam
                     <Box sx={{wide:'100%', height:'10%', display:'flex', justifyContent:'flex-end'}}>
                         <Button
                             variant='contained'
+                            disabled={disableConfirmButton}
                             sx={{width:'10%'}}
-                            onClick={() => setShowBillModal(true)}>
+                            onClick={() => setShowBillModal(true)}
+                        >
                             确认
                         </Button>
                     </Box>
