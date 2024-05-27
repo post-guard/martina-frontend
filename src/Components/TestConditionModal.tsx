@@ -20,9 +20,11 @@ import MenuItem from "@mui/material/MenuItem";
 
 const client = createClient<openapi.paths>();
 
-const TestConditionModal = ({open, onClose}: {
+const TestConditionModal = ({open, onClose, refresh, setRefresh}: {
     open: boolean,
-    onClose: React.Dispatch<React.SetStateAction<boolean>>
+    onClose: React.Dispatch<React.SetStateAction<boolean>>,
+    refresh: boolean,
+    setRefresh: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
     const authMiddleware = useAuthMiddleware();
     client.use(authMiddleware);
@@ -46,7 +48,9 @@ const TestConditionModal = ({open, onClose}: {
                     horizontal: 'center',
                 }
             });
+            setRefresh(!refresh)
             onClose(false)
+
         } else {
             enqueueSnackbar("运行测试脚本失败", {
                 variant: "error",
@@ -132,7 +136,7 @@ const TestConditionModal = ({open, onClose}: {
                         <Grid container sx={{width: '75%'}}>
                             <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                 <Button variant="outlined"
-                                        onClick={() => handleStopButton}
+                                        onClick={handleStopButton}
                                         color={'warning'}>
                                     停止测试
                                 </Button>
@@ -140,7 +144,7 @@ const TestConditionModal = ({open, onClose}: {
                             <Grid item xs={4}/>
                             <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                 <Button variant="outlined"
-                                        onClick={() => handleStartButton}
+                                        onClick={handleStartButton}
                                         color={'primary'}>
                                     开始测试
                                 </Button>

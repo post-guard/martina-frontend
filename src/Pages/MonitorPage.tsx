@@ -45,6 +45,9 @@ export function MonitorPage() {
     // true -> 系统开机,显示关机按钮
     // false -> 系统关机,显示开机按钮
 
+    const [refresh,setRefresh] = useState(true);
+    // 刷新触发器
+
     // 获得全部房间列表
     useEffect(() => {
         const getRooms = async () => {
@@ -77,7 +80,7 @@ export function MonitorPage() {
         }
         getRooms()
 
-    }, []);
+    }, [refresh]);
 
     useEffect(() => {
         const getSystemStatus = async () => {
@@ -308,7 +311,7 @@ export function MonitorPage() {
                 height: "90%",
                 boxSizing: "border-box",
                 padding: '10px',
-                overflowY: "scroll"
+                overflowY: "auto"
             }}>
                 <Grid container columnSpacing={3} rowSpacing={3}
                       sx={{position: "relative", left: "5%", width: "90%", height: "100%"}}>
@@ -330,6 +333,8 @@ export function MonitorPage() {
             onClose={setShowSettingModel}/>
         <TestConditionModal
             open={showTestModel}
-            onClose={setShowTestModel}/>
+            onClose={setShowTestModel}
+            refresh={refresh}
+        setRefresh={setRefresh}/>
     </>
 }
