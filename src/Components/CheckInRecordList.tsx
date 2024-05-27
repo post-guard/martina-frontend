@@ -9,10 +9,11 @@ interface CheckInRecordListProps {
     records: CheckInRecord[],
     userId: string,
     userName: string,
-    openDetailListModal:(selectedRecord:CheckInRecord) => void
+    openDetailListModal:(selectedRecord:CheckInRecord) => void,
+    refresh: () => void;
 }
 
-const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userName, openDetailListModal}) => {
+const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userName, openDetailListModal, refresh}) => {
     const [selectedRecords, setSelectedRecords] = useState<CheckInRecord[]>([]);
     const [showBillModal, setShowBillModal] = useState(false);
 
@@ -80,7 +81,7 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userNam
     }
 
     const onBillModalClose = () => {
-        //应该还需要触发checkIn列表的更新
+        refresh();  //刷新入住记录列表
         setSelectedRecords([]);
         setShowBillModal(false);
     }

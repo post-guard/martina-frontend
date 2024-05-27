@@ -47,24 +47,33 @@ export function CheckOutPage() {
             return;
         }
 
-        getUserInfo().then(curUser => {
-            setUser(curUser);
-        });
+        getResults();
+    }
 
-        getCheckInRecords().then(newRecords => {
-            const records = filterResults(newRecords);
-            setCheckInRecords(records);
-            if(records.length === 0) {
-                enqueueSnackbar("没有查到任何内容！", {
-                    variant: "warning",
-                    autoHideDuration:3000,
-                    anchorOrigin: {
-                        vertical: 'top',
-                        horizontal: 'center',
-                    }
-                });
-            }
-        });
+    const getResults = () => {
+        if(searchFormData.userId !== "") {
+            getUserInfo().then(curUser => {
+                setUser(curUser);
+            });
+
+            getCheckInRecords().then(newRecords => {
+                const records = filterResults(newRecords);
+                setCheckInRecords(records);
+                if(records.length === 0) {
+                    enqueueSnackbar("没有查到任何内容！", {
+                        variant: "warning",
+                        autoHideDuration:3000,
+                        anchorOrigin: {
+                            vertical: 'top',
+                            horizontal: 'center',
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            setCheckInRecords([]);
+        }
     }
 
     async function getUserInfo(): Promise<User> {
@@ -221,7 +230,9 @@ export function CheckOutPage() {
                         records={checkInRecords}
                         userId={user.id}
                         userName={user.name}
-                        openDetailListModal={openDetailListModal}>
+                        openDetailListModal={openDetailListModal}
+                        refresh={getResults}
+                    >
                     </CheckInRecordList>
                 </Box>
 
