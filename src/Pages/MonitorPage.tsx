@@ -32,7 +32,9 @@ export function MonitorPage() {
             highSpeedPerDegree: 0,
             middleSpeedPerDegree: 0,
             lowSpeedPerDegree: 0,
-            backSpeed: 0
+            backSpeed: 0,
+            temperatureThreshold: 0,
+            pricePerDegree: 0
         }
     )
 
@@ -87,7 +89,9 @@ export function MonitorPage() {
                     highSpeedPerDegree: responses.data.highSpeedPerDegree,
                     middleSpeedPerDegree: responses.data.middleSpeedPerDegree,
                     lowSpeedPerDegree: responses.data.lowSpeedPerDegree,
-                    backSpeed: responses.data.backSpeed
+                    backSpeed: responses.data.backSpeed,
+                    temperatureThreshold: responses.data.temperatureThreshold,
+                    pricePerDegree: responses.data.pricePerDegree
                 })
                 setSystemControlButtonStatus(true)
             } else {
@@ -100,7 +104,9 @@ export function MonitorPage() {
                     highSpeedPerDegree: 0,
                     middleSpeedPerDegree: 0,
                     lowSpeedPerDegree: 0,
-                    backSpeed: 0
+                    backSpeed: 0,
+                    temperatureThreshold: 0,
+                    pricePerDegree: 0
                 })
                 setSystemControlButtonStatus(false)
             }

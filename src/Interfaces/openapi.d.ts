@@ -5,6 +5,44 @@
 
 
 export interface paths {
+  "/api/airConditioner/airConditionerRecords": {
+    /** 查询空调详单 */
+    get: {
+      parameters: {
+        query?: {
+          roomId?: string;
+          beginTime?: number;
+          endTime?: number;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["AirConditionerRecordResponse"][];
+            "application/json": components["schemas"]["AirConditionerRecordResponse"][];
+            "text/json": components["schemas"]["AirConditionerRecordResponse"][];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
   "/api/airConditioner/{roomId}": {
     /**
      * 发起空调服务请求
@@ -160,6 +198,157 @@ export interface paths {
         /** @description Success */
         200: {
           content: never;
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/bill": {
+    /** 查询符合条件的账单 */
+    get: {
+      parameters: {
+        query?: {
+          userId?: string;
+          roomId?: string;
+          beginTime?: number;
+          endTime?: number;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["BillResponse"][];
+            "application/json": components["schemas"]["BillResponse"][];
+            "text/json": components["schemas"]["BillResponse"][];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/bill/{id}": {
+    /** 获取指定的账单ID */
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["BillResponse"];
+            "application/json": components["schemas"]["BillResponse"];
+            "text/json": components["schemas"]["BillResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+        /** @description Not Found */
+        404: {
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
+  };
+  "/api/bill/preview": {
+    /** 获得预览的账单 */
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": string[];
+          "text/json": string[];
+          "application/*+json": string[];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["BillResponse"];
+            "application/json": components["schemas"]["BillResponse"];
+            "text/json": components["schemas"]["BillResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/bill/checkout": {
+    /** 结账 */
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": string[];
+          "text/json": string[];
+          "application/*+json": string[];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["BillResponse"];
+            "application/json": components["schemas"]["BillResponse"];
+            "text/json": components["schemas"]["BillResponse"];
+          };
         };
         /** @description Bad Request */
         400: {
@@ -454,6 +643,72 @@ export interface paths {
       };
     };
   };
+  "/api/test/start": {
+    /**
+     * 发起测试请求
+     * @description caseName: hot | cool
+     */
+    patch: {
+      parameters: {
+        query?: {
+          caseName?: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["CheckinResponse"][];
+            "application/json": components["schemas"]["CheckinResponse"][];
+            "text/json": components["schemas"]["CheckinResponse"][];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/test/stop": {
+    /** 停止正在进行的测试 */
+    patch: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: never;
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
   "/api/user/register": {
     /** 注册用户 */
     post: {
@@ -634,11 +889,12 @@ export interface components {
        * @description 当前空调系统的默认温度
        */
       defaultTemperature: number;
+      defaultFanSpeed: components["schemas"]["FanSpeed"];
       /**
        * Format: double
-       * @description 当前空调系统的默认风速
+       * @description 回温之后再次加入工作队列的温差阈值
        */
-      defaultFanSpeed: number;
+      temperatureThreshold: number;
       /**
        * Format: double
        * @description 高速风导致温度变化的速度
@@ -663,6 +919,51 @@ export interface components {
        * 单位为度每分
        */
       backSpeed: number;
+      /**
+       * Format: double
+       * @description 每度温度变化的费用
+       */
+      pricePerDegree?: number;
+    };
+    AirConditionerRecordResponse: {
+      /**
+       * Format: date-time
+       * @description 开始使用的时间
+       */
+      beginTime: string;
+      /**
+       * Format: date-time
+       * @description 结束使用的时间
+       */
+      endTime: string;
+      /**
+       * Format: double
+       * @description 开始使用时的温度
+       */
+      beginTemperature: number;
+      /**
+       * Format: double
+       * @description 结束使用时的温度
+       */
+      endTemperature: number;
+      /**
+       * Format: double
+       * @description 使用空调造成的温度变化量
+       */
+      temperatureDelta: number;
+      /**
+       * Format: double
+       * @description 当前空调的费用
+       * 单位是元每度
+       */
+      price: number;
+      /**
+       * Format: double
+       * @description 使用空调的费用
+       */
+      fee: number;
+      /** @description 是否结账 */
+      checked: boolean;
     };
     AirConditionerRequest: {
       /** @description 开启还是关闭空调 */
@@ -699,9 +1000,39 @@ export interface components {
      * 0 空调处在关闭状态
      * 1 空调处在等待状态
      * 2 空调处在工作状态
-     * @enum {integer}
+     * @enum {number}
      */
     AirConditionerStatus: 0 | 1 | 2;
+    BillResponse: {
+      /** @description 当前账单的ID */
+      id?: string | null;
+      /** @description 结账的用户名 */
+      userId: string;
+      /**
+       * Format: date-time
+       * @description 入住的开始时间
+       */
+      beginTime: string;
+      /**
+       * Format: date-time
+       * @description 入住的结束时间
+       */
+      endTime: string;
+      /** @description 入住时间段中的入住记录列表 */
+      checkinResponses: components["schemas"]["CheckinResponse"][];
+      /** @description 入住时间段中的空调使用记录列表 */
+      airConditionerRecordResponses: components["schemas"]["AirConditionerRecordResponse"][];
+      /**
+       * Format: double
+       * @description 入住阶段的房费
+       */
+      roomFee: number;
+      /**
+       * Format: double
+       * @description 入住阶段的空调使用费
+       */
+      airConditionerFee: number;
+    };
     CheckinRequest: {
       /** @description 入住的房间号 */
       roomId: string;
@@ -765,7 +1096,7 @@ export interface components {
      * 0 低速风
      * 1 中速风
      * 2 高速风
-     * @enum {integer}
+     * @enum {number}
      */
     FanSpeed: 0 | 1 | 2;
     /** @description 用户登录请求的传输类 */
@@ -790,6 +1121,15 @@ export interface components {
       airconAdmin: boolean;
       /** @description 用户是否为账单管理员 */
       billAdmin: boolean;
+    };
+    ProblemDetails: {
+      type?: string | null;
+      title?: string | null;
+      /** Format: int32 */
+      status?: number | null;
+      detail?: string | null;
+      instance?: string | null;
+      [key: string]: unknown;
     };
     /** @description 注册的请求信息传输类 */
     RegisterRequest: {

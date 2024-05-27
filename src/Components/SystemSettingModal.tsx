@@ -47,7 +47,9 @@ const SystemSettingModal = ({defaultStatus, open, onClose}: {
                 highSpeedPerDegree: settingData.highSpeedPerDegree,
                 middleSpeedPerDegree: settingData.middleSpeedPerDegree,
                 lowSpeedPerDegree: settingData.lowSpeedPerDegree,
-                backSpeed: settingData.backSpeed
+                backSpeed: settingData.backSpeed,
+                temperatureThreshold: settingData.temperatureThreshold,
+                pricePerDegree: settingData.pricePerDegree
             }
         });
 
@@ -189,6 +191,7 @@ const SystemSettingModal = ({defaultStatus, open, onClose}: {
                                         label="缺省风速"
                                         onChange={(event: SelectChangeEvent) => setSettingData({
                                             ...settingData,
+                                            // @ts-expect-error ...
                                             defaultFanSpeed: parseInt(event.target.value)
                                         })}
                                     >
@@ -268,6 +271,43 @@ const SystemSettingModal = ({defaultStatus, open, onClose}: {
                                     onChange={(e) => setSettingData({
                                         ...settingData,
                                         backSpeed: isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value)
+                                    })}
+                                >
+                                </TextField>
+                            </Grid>
+                        </Grid>
+
+                        <Grid container spacing={0} sx={{width: "75%"}}>
+
+                            <Grid item xs={5}>
+                                <TextField
+                                    required
+                                    id="temperature-threshold"
+                                    label="回温温差阈值"
+                                    type={'number'}
+                                    variant="standard"
+                                    style={{width: "100%"}}
+                                    value={settingData.temperatureThreshold}
+                                    onChange={(e) => setSettingData({
+                                        ...settingData,
+                                        temperatureThreshold: isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value)
+                                    })}
+                                >
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={2}/>
+                            <Grid item xs={5}>
+                                <TextField
+                                    required
+                                    id="back-temperature"
+                                    label="价格(元/度)"
+                                    type={'number'}
+                                    variant="standard"
+                                    style={{width: "100%"}}
+                                    value={settingData.pricePerDegree}
+                                    onChange={(e) => setSettingData({
+                                        ...settingData,
+                                        pricePerDegree: isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value)
                                     })}
                                 >
                                 </TextField>
