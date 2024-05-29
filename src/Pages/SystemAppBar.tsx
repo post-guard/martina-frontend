@@ -78,7 +78,7 @@ export default function SystemAppBar({pages, setChildPage}: {
                             textDecoration: 'none',
                         }}
                     >
-                        巴普特酒店管理系统
+                        波普特酒店管理系统
                     </Typography>
 
                     <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
@@ -136,7 +136,7 @@ export default function SystemAppBar({pages, setChildPage}: {
                             textDecoration: 'none',
                         }}
                     >
-                        巴普特酒店管理系统
+                        波普特酒店管理系统
                     </Typography>
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
                         {pages.map((page) => (

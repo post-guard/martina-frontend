@@ -14,7 +14,7 @@ interface airConditionerState {
     temperature: number,
     speed: 0 | 1 | 2,
     cooling : boolean,
-    waitingNum: number
+    status: number
 }
 
 export function AirConDisplayCard({roomData}:{roomData:AirConditionerState}) {
@@ -23,7 +23,7 @@ export function AirConDisplayCard({roomData}:{roomData:AirConditionerState}) {
         temperature: 0,
         speed: 0,
         cooling : false,
-        waitingNum: 0
+        status: 0
     })
 
     useLayoutEffect(() => {
@@ -31,7 +31,7 @@ export function AirConDisplayCard({roomData}:{roomData:AirConditionerState}) {
                 temperature : roomData.temperature,
                 speed: roomData.speed,
                 cooling : roomData.cooling,
-                waitingNum : 114514
+                status : roomData.status
             })
     }, [roomData]);
 
@@ -67,7 +67,7 @@ export function AirConDisplayCard({roomData}:{roomData:AirConditionerState}) {
                                         height: "95%",
                                         placeItems: "center"
                                     }}>
-                            {currentState.temperature}
+                            {currentState.temperature.toFixed(2)}
                         </Typography>
                     </Box>
                     <Box sx={{height: "5%", width: "100%"}}/>
@@ -177,7 +177,7 @@ export function AirConDisplayCard({roomData}:{roomData:AirConditionerState}) {
                                 placeItems: "center",
                                 color: "#1976d2"
                             }}>
-                            请求状态
+                            空调状态
                         </Typography>
                         <Typography variant={"h5"}
                                     sx={{
@@ -187,7 +187,9 @@ export function AirConDisplayCard({roomData}:{roomData:AirConditionerState}) {
                                         height: "95%",
                                         placeItems: "center"
                                     }}>
-                            前面还有{currentState.waitingNum}位用户在等待
+                            {currentState.status === 0 ?
+                                '关机' :
+                                (currentState.status === 1 ? '等待' : '运行') }
                         </Typography>
                     </Box>
                 </Stack>

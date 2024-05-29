@@ -76,6 +76,8 @@ export function MonitorPage() {
                     return a.info.id > b.info.id ? 1 : -1
                 })
                 setRoomList(newRoomList);
+            } else {
+                console.log('请求房间列表不存在!')
             }
         }
         getRooms()
