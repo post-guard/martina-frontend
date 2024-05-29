@@ -514,6 +514,40 @@ export interface paths {
       };
     };
   };
+  "/api/manager/revenue": {
+    /**
+     * 查询酒店的收入趋势
+     * @description begin 合法的日期字符串 建议格式为 yyyy-MM-dd
+     *
+     * end 合法的日期字符串 建议格式为 yyyy-MM-dd
+     */
+    get: {
+      parameters: {
+        query?: {
+          begin?: string;
+          end?: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["RevenueTrend"];
+            "application/json": components["schemas"]["RevenueTrend"];
+            "text/json": components["schemas"]["RevenueTrend"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+      };
+    };
+  };
   "/api/room": {
     /**
      * 查询所有的房间
@@ -705,6 +739,21 @@ export interface paths {
         /** @description Forbidden */
         403: {
           content: never;
+        };
+      };
+    };
+  };
+  "/api/time/now": {
+    /** 获得当前的系统时间 */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["TimeResponse"];
+            "application/json": components["schemas"]["TimeResponse"];
+            "text/json": components["schemas"]["TimeResponse"];
+          };
         };
       };
     };
@@ -1085,6 +1134,23 @@ export interface components {
        */
       roomBasicTemperature: number;
     };
+    DailyRevenue: {
+      /**
+       * Format: date-time
+       * @description 当天的时间
+       */
+      day: string;
+      /**
+       * Format: double
+       * @description 当天的房费收入
+       */
+      roomRevenue: number;
+      /**
+       * Format: double
+       * @description 当天的空调收入
+       */
+      airConditionerRevenue: number;
+    };
     /** @description 错误信息传输类 */
     ExceptionMessage: {
       /** @description 错误信息 */
@@ -1140,6 +1206,20 @@ export interface components {
       /** @description 用户密码 */
       password: string;
     };
+    RevenueTrend: {
+      /**
+       * Format: int32
+       * @description 酒店当前的总住户数
+       */
+      totalUsers: number;
+      /**
+       * Format: int32
+       * @description 酒店当前的总入住数
+       */
+      totalCheckin: number;
+      /** @description 酒店按天的收入变化 */
+      dailyRevenues: components["schemas"]["DailyRevenue"][];
+    };
     /** @description 房间传输类 */
     RoomResponse: {
       /** @description 房间的ID */
@@ -1158,6 +1238,13 @@ export interface components {
       roomBaiscTemperature: number;
       airConditioner: components["schemas"]["AirConditionerResponse"];
       checkinStatus?: components["schemas"]["CheckinResponse"];
+    };
+    TimeResponse: {
+      /**
+       * Format: date-time
+       * @description 当前的系统时间
+       */
+      now: string;
     };
     /** @description 用户信息传输类 */
     UserResponse: {

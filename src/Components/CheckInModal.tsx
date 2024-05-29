@@ -1,6 +1,6 @@
 import {Box, Button, Modal, Paper, Stack, TextField, Typography} from "@mui/material";
 import {enqueueSnackbar} from "notistack";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Room} from "../Interfaces/Room.ts";
 import {Form} from "react-router-dom";
 import createClient from "openapi-fetch";
@@ -23,6 +23,26 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
         "beginTime": "",
         "endTime": ""
     })
+
+    useEffect(() => {
+        getDefaultDate().then(defaultDate => {
+            setRegisterFormData({"roomId": selectedRoom.id,
+                "userId": "",
+                "username": "",
+                "beginTime": defaultDate,
+                "endTime": defaultDate})
+        })
+    }, [selectedRoom])
+
+    const getDefaultDate = async (): Promise<string> => {
+        const response = await client.GET('/api/time/now')
+        if(response.response.status === 200 && response.data !== undefined && response.data.now.length > 0) {
+            return response.data.now.slice(0, 10);
+        }
+
+        return ''
+    }
+
     const onConfirmClick = async () => {
         setConfirmButtonState(false);
         const response = await client.POST("/api/checkin", {
@@ -38,7 +58,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
         if(response.response.status == 201) {
             enqueueSnackbar("登记成功，即将跳转页面", {
                 variant: "success",
-                autoHideDuration:2000,
+                autoHideDuration:500,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center',
@@ -46,12 +66,12 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
             });
             setTimeout(() => {
                 onClose();
-            }, 2000)
+            }, 500)
         } else if(response.response.status == 400) {
             const message = response.error?.message || "登记失败"
             enqueueSnackbar(message, {
                 variant: "error",
-                autoHideDuration: 3000,
+                autoHideDuration: 1000,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center'
@@ -59,11 +79,11 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
             });
             setTimeout(() => {
                 onClose();
-            }, 2000)
+            }, 1000)
         } else {
             enqueueSnackbar("登记失败", {
                 variant: "error",
-                autoHideDuration: 3000,
+                autoHideDuration: 1000,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center'
@@ -117,7 +137,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
                                 <TextField
                                     required
                                     id="customer-id"
-                                    label="身份证号"
+                                    label="波普特号"
                                     variant="standard"
                                     style={{width: "75%"}}
                                     value={registerFormData.userId}

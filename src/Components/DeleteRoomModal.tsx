@@ -1,6 +1,16 @@
 import {Room} from "../Interfaces/Room.ts";
 import {ChangeEvent, FC, useState} from "react";
-import {Box, Button, Checkbox, Modal, Paper, Stack, Typography} from "@mui/material";
+import {
+    Box,
+    Button,
+    Checkbox,
+    Dialog, DialogActions,
+    DialogTitle,
+    Modal,
+    Paper,
+    Stack,
+    Typography
+} from "@mui/material";
 import createClient from "openapi-fetch";
 import * as openapi from "../Interfaces/openapi";
 import {useAuthMiddleware} from "../Utils/Middleware.tsx";
@@ -18,6 +28,8 @@ const DeleteRoomModal: FC<DeleteRoomModalProps> = ({rooms, onClose}) => {
     const authMiddleware = useAuthMiddleware();
     const [selectedRooms, setSelectedRooms] = useState<string[]>([]);
     const [confirmButtonState, setConfirmButtonState] = useState(true);
+    const [openDialog, setOpenDialog] = useState(false);
+
     const onConfirmClick = () => {
         if(selectedRooms.length === 0) {
             enqueueSnackbar("您还未选择要删除的房间", {
@@ -32,8 +44,12 @@ const DeleteRoomModal: FC<DeleteRoomModalProps> = ({rooms, onClose}) => {
         }
 
         setConfirmButtonState(false);
+        deleteRooms(selectedRooms);
+    }
+
+    const deleteRooms = (roomIds: string[]) => {
         Promise.all(
-            selectedRooms.map(async (roomId) => {
+            roomIds.map(async (roomId) => {
                 const response = await client.DELETE('/api/room/{roomId}', {
                     params: {
                         path:{
@@ -49,7 +65,7 @@ const DeleteRoomModal: FC<DeleteRoomModalProps> = ({rooms, onClose}) => {
         ).then(() => {
             enqueueSnackbar("删除房间成功", {
                 variant: "success",
-                autoHideDuration:2000,
+                autoHideDuration:500,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center',
@@ -57,13 +73,13 @@ const DeleteRoomModal: FC<DeleteRoomModalProps> = ({rooms, onClose}) => {
             });
             setTimeout(() => {
                 onClose();
-            }, 2000);
+            }, 500);
         }).catch((error) => {
             console.log('删除房间时出错:', error);
 
             enqueueSnackbar("删除房间失败", {
                 variant: "error",
-                autoHideDuration:2000,
+                autoHideDuration:1000,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center',
@@ -71,7 +87,7 @@ const DeleteRoomModal: FC<DeleteRoomModalProps> = ({rooms, onClose}) => {
             });
             setTimeout(() => {
                 onClose();
-            }, 2000);
+            }, 1000);
         })
     }
 
@@ -83,6 +99,15 @@ const DeleteRoomModal: FC<DeleteRoomModalProps> = ({rooms, onClose}) => {
         else {
             setSelectedRooms(selectedRooms.filter((id) => id !== roomId));
         }
+    }
+
+    const handleClose = () => {
+        setOpenDialog(false);
+    }
+
+    const handleDeleteAll = () => {
+        setOpenDialog(false);
+        deleteRooms(rooms.map((room) => room.id));
     }
 
     client.use(authMiddleware);
@@ -141,7 +166,10 @@ const DeleteRoomModal: FC<DeleteRoomModalProps> = ({rooms, onClose}) => {
                             justifyContent:'center',
                             alignItems:'center'
                         }}>
-                            <Button variant='contained' onClick={() => onClose()} sx={{mr:10, width:'25%'}}>
+                            <Button onClick={() => setOpenDialog(true)} variant='contained' sx={{mr:5, width:'25%'}}>
+                                删除所有
+                            </Button>
+                            <Button variant='contained' onClick={() => onClose()} sx={{mr:5, width:'25%'}}>
                                 取消
                             </Button>
                             <Button
@@ -152,6 +180,21 @@ const DeleteRoomModal: FC<DeleteRoomModalProps> = ({rooms, onClose}) => {
                                 确认
                             </Button>
                         </Box>
+
+                        <Dialog
+                            open={openDialog}
+                            onClose={handleClose}
+                        >
+                            <DialogTitle id="alert-dialog-title">{"确定要删除所有房间?"}</DialogTitle>
+                            <DialogActions>
+                                <Button onClick={handleClose}>
+                                    否
+                                </Button>
+                                <Button onClick={handleDeleteAll} autoFocus>
+                                    是
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
                     </Stack>
                 </Paper>
             </div>

@@ -1,6 +1,6 @@
 import {Room} from "../Interfaces/Room.ts";
 import React from "react";
-import {Card} from "@mui/material";
+import {Card, Typography} from "@mui/material";
 
 interface RoomProps {
     room: Room;
@@ -29,6 +29,10 @@ const RoomStateCard: React.FC<RoomProps> = ({room, onRoomClick}) => {
             onClick={() => onRoomClick(room)}
         >
             {room.name} - {room.status === 'occupied' ? '已入住' : '空闲'}
+            {
+                room.status === 'occupied' &&
+                <Typography>入住人:{room.userName}</Typography>
+            }
         </Card>
     );
 };

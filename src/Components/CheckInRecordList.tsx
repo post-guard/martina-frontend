@@ -97,6 +97,7 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userNam
         refresh();  //刷新入住记录列表
         setSelectedRecords([]);
         setShowBillModal(false);
+        setDisableConfirmButton(true);
     }
 
     return (

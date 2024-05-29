@@ -1,6 +1,7 @@
 export interface Room {
     id: string;
     name: string;
-    // userName: string;
+    userId:string;
+    userName: string;
     status: 'occupied' | 'free'
 }

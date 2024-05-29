@@ -21,11 +21,13 @@ export function RoomStatePage() {
     const [showCheckInModal, setShowCheckInModal] = useState(false);
     const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
     const [showDeleteRoomModal, setShowDeleteRoomModal] = useState(false);
-    const [selectedRoom, setSelectedRoom] = useState<Room>({id:'',name:'',status:'occupied'});
+    const [selectedRoom, setSelectedRoom] = useState<Room>({userId: "", userName: "", id:'',name:'',status:'occupied'});
 
     useEffect(() => {
         getAllRooms().then(newRooms => {
-            setRooms(newRooms);
+            getRoomOccupant(newRooms).then(rooms => {
+                setRooms(rooms);
+            })
         })
     }, []);
 
@@ -36,12 +38,41 @@ export function RoomStatePage() {
                 return response.data.map((room) => ({
                     id: room.roomId,
                     name: room.roomName,
-                    status: room.checkinStatus === null || room.checkinStatus?.checkout ? 'free' : 'occupied'
+                    status: room.checkinStatus === null || room.checkinStatus?.checkout ? 'free' : 'occupied',
+                    userId: room.checkinStatus === undefined || room.checkinStatus === null || room.checkinStatus?.checkout ? '' : room.checkinStatus.userId,
+                    userName: ''
                 }));
             }
         }
 
         return [];
+    }
+
+    async function getRoomOccupant(rooms: Room[]): Promise<Room[]> {
+        const promises = rooms.map(async (room):Promise<Room> => {
+            if(room.status === 'free') {
+                return room;
+            }
+
+            const response = await client.GET('/api/user/{userId}', {
+                params: {
+                    path: {
+                        userId: room.userId
+                    }
+                }
+            });
+
+            if(response.response.status === 200 && response.data !== undefined) {
+                room.userName = response.data.name;
+            }
+            else {
+                room.userName = '';
+            }
+
+            return room;
+        });
+
+        return await Promise.all(promises);
     }
 
     const onRoomClick = (room: Room) => {
@@ -79,7 +110,9 @@ export function RoomStatePage() {
 
     const refreshRooms = () => {
         getAllRooms().then(newRooms => {
-            setRooms(newRooms);
+            getRoomOccupant(newRooms).then(rooms => {
+                setRooms(rooms);
+            })
         })
     }
 
