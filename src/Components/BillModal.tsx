@@ -92,7 +92,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
         if (error!=null) {
             enqueueSnackbar(error, {
                 variant: "error",
-                autoHideDuration:500,
+                autoHideDuration:2000,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center',
@@ -196,7 +196,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
 
         enqueueSnackbar("导出成功，请查看下载栏", {
             variant: "success",
-            autoHideDuration:500,
+            autoHideDuration:2000,
             anchorOrigin: {
                 vertical: 'top',
                 horizontal: 'center',
@@ -217,7 +217,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
                     setBills(responses.data);
                     enqueueSnackbar("结账成功", {
                         variant: "success",
-                        autoHideDuration:500,
+                        autoHideDuration:2000,
                         anchorOrigin: {
                             vertical: 'top',
                             horizontal: 'center',
@@ -226,7 +226,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
                 } else {
                     enqueueSnackbar("结账失败", {
                         variant: "error",
-                        autoHideDuration:500,
+                        autoHideDuration:2000,
                         anchorOrigin: {
                             vertical: 'top',
                             horizontal: 'center',

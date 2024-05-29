@@ -61,7 +61,7 @@ const DetailFormModal: FC<DetailFormModalProps> = ({checkInRecord, onClose}) => 
         if (error!=null) {
             enqueueSnackbar(error, {
                 variant: "error",
-                autoHideDuration:500,
+                autoHideDuration:2000,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center',
@@ -105,7 +105,7 @@ const DetailFormModal: FC<DetailFormModalProps> = ({checkInRecord, onClose}) => 
         XLSX.writeFile(wb, `详单_${checkInRecord.roomId}.xlsx`);
         enqueueSnackbar("导出成功，请查看下载栏", {
             variant: "success",
-            autoHideDuration:500,
+            autoHideDuration:2000,
             anchorOrigin: {
                 vertical: 'top',
                 horizontal: 'center',
