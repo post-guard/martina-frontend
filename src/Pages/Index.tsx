@@ -29,8 +29,12 @@ export function Index() {
                     url: "roomState"
                 },
                 {
-                    name:"结账办理",
-                    url:"checkOut"
+                    name: "结账办理",
+                    url: "checkOut"
+                },
+                {
+                    name: "数据统计",
+                    url: "dataAnalysis"
                 }
             ];
             break;
