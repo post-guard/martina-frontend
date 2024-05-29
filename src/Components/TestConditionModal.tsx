@@ -86,6 +86,39 @@ const TestConditionModal = ({open, onClose, refresh, setRefresh}: {
         }
     }
 
+    const handleClearButton = async () => {
+        const responses = await client.PATCH('/api/test/clear', {
+            params: {
+                query: {
+                    caseName: testMode ? 'cool' : 'hot'
+                }
+            }
+        });
+
+        if (responses.response.status === 200) {
+            enqueueSnackbar("清除测试集数据成功", {
+                variant: "success",
+                autoHideDuration: 1000,
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                }
+            });
+            setRefresh(!refresh)
+            onClose(false)
+
+        } else {
+            enqueueSnackbar("清除测试集数据失败", {
+                variant: "error",
+                autoHideDuration: 1000,
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                }
+            });
+        }
+    }
+
     return (
         <Modal open={open} onClose={() => onClose(false)}>
             <Box
@@ -136,12 +169,18 @@ const TestConditionModal = ({open, onClose, refresh, setRefresh}: {
                         <Grid container sx={{width: '75%'}}>
                             <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                 <Button variant="outlined"
+                                        onClick={handleClearButton}
+                                        color={'error'}>
+                                    清除测试集
+                                </Button>
+                            </Grid>
+                            <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                <Button variant="outlined"
                                         onClick={handleStopButton}
                                         color={'warning'}>
                                     停止测试
                                 </Button>
                             </Grid>
-                            <Grid item xs={4}/>
                             <Grid item xs={4} sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                 <Button variant="outlined"
                                         onClick={handleStartButton}

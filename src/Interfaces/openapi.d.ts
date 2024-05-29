@@ -674,6 +674,14 @@ export interface paths {
             "text/json": components["schemas"]["ExceptionMessage"];
           };
         };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
       };
     };
   };
@@ -766,6 +774,41 @@ export interface paths {
           "application/json": components["schemas"]["RegisterRequest"];
           "text/json": components["schemas"]["RegisterRequest"];
           "application/*+json": components["schemas"]["RegisterRequest"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: never;
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ExceptionMessage"];
+            "application/json": components["schemas"]["ExceptionMessage"];
+            "text/json": components["schemas"]["ExceptionMessage"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
+      };
+    };
+  };
+  "/api/test/clear": {
+    /**
+     * 清除指定测试集造成的影响
+     * @description casename : hot | cool
+     */
+    patch: {
+      parameters: {
+        query?: {
+          caseName?: string;
         };
       };
       responses: {
