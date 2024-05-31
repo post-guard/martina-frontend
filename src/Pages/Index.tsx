@@ -71,10 +71,6 @@ export function Index() {
                     name: "空调控制",
                     url: "air-control"
                 },
-                {
-                    name: "详单",
-                    url: "detailList"
-                }
             ];
             break;
         }
