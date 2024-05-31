@@ -22,7 +22,8 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
         "username": "",
         "beginTime": "",
         "endTime": ""
-    })
+    });
+    const [defaultDate, setDefaultDate] = useState('');
 
     useEffect(() => {
         getDefaultDate().then(defaultDate => {
@@ -37,7 +38,9 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
     const getDefaultDate = async (): Promise<string> => {
         const response = await client.GET('/api/time/now')
         if(response.response.status === 200 && response.data !== undefined && response.data.now.length > 0) {
-            return response.data.now.slice(0, 10);
+            const date = response.data.now.slice(0, 10);
+            setDefaultDate(date);
+            return date;
         }
 
         return ''
@@ -50,15 +53,18 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
                 "roomId": registerFormData.roomId,
                 "userId": registerFormData.userId,
                 "username": registerFormData.username,
-                "beginTime": dayjs(new Date(registerFormData.beginTime)).unix(),
-                "endTime": dayjs(new Date(registerFormData.endTime)).unix()
+                "beginTime": dayjs(new Date(registerFormData.beginTime)).add(1, 'second').unix(),
+                "endTime": dayjs(new Date(registerFormData.endTime)).add(1, 'day').subtract(1, 'second').unix()
             }
         });
 
         if(response.response.status == 201) {
-            enqueueSnackbar("登记成功，即将跳转页面", {
+            const message = registerFormData.beginTime === defaultDate ?
+                '入住成功!' :
+                `预约成功! 预约时间${registerFormData.beginTime}-${registerFormData.endTime}`;
+            enqueueSnackbar(message, {
                 variant: "success",
-                autoHideDuration:500,
+                autoHideDuration:3000,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center',
@@ -66,12 +72,12 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
             });
             setTimeout(() => {
                 onClose();
-            }, 500)
+            }, 1000)
         } else if(response.response.status == 400) {
-            const message = response.error?.message || "登记失败"
+            const message = response.error?.message || selectedRoom.status === 'free' ? '登记失败' : '预约失败'
             enqueueSnackbar(message, {
                 variant: "error",
-                autoHideDuration: 1000,
+                autoHideDuration: 3000,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center'
@@ -81,9 +87,9 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
                 onClose();
             }, 1000)
         } else {
-            enqueueSnackbar("登记失败", {
+            enqueueSnackbar(selectedRoom.status === 'free' ? '登记失败' : '预约失败', {
                 variant: "error",
-                autoHideDuration: 1000,
+                autoHideDuration: 3000,
                 anchorOrigin: {
                     vertical: 'top',
                     horizontal: 'center'
@@ -120,7 +126,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
                                     variant="h4"
                                     style={{textAlign: "center"}}
                                 >
-                                    客户登记
+                                    {selectedRoom.status === 'free' ? '入住登记' : '预约登记'}
                                 </Typography>
 
                                 <TextField
@@ -148,7 +154,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
                                 <TextField
                                     required
                                     id="check-in-date"
-                                    label="入住日期"
+                                    label="入住日期 ( 00:00:01 )"
                                     type="date"
                                     style={{width: "75%"}}
                                     InputLabelProps={{shrink: true}}
@@ -160,7 +166,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
                                 <TextField
                                     required
                                     id="check-out-date"
-                                    label="离开日期"
+                                    label="离开日期 ( 23:59:59 )"
                                     type="date"
                                     style={{width: "75%"}}
                                     InputLabelProps={{shrink: true}}

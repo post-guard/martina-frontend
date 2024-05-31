@@ -4,7 +4,6 @@ import CheckInModal from "../Components/CheckInModal.tsx";
 import createClient from "openapi-fetch";
 import * as openapi from "../Interfaces/openapi";
 import {useAuthMiddleware} from "../Utils/Middleware.tsx";
-import {enqueueSnackbar} from "notistack";
 import {Box, Button, Grid} from "@mui/material";
 import {useAppSelector} from "../Utils/StoreHooks.ts";
 import CreateRoomModal from "../Components/CreateRoomModal.tsx";
@@ -78,19 +77,7 @@ export function RoomStatePage() {
     const onRoomClick = (room: Room) => {
         refreshRooms();
         setSelectedRoom(room);
-        if(room.status === 'occupied') {
-            enqueueSnackbar("当前房间已被占用！", {
-                variant: "warning",
-                autoHideDuration:3000,
-                anchorOrigin: {
-                    vertical: 'top',
-                    horizontal: 'center',
-                }
-            });
-        }
-        else {
-            setShowCheckInModal(true);
-        }
+        setShowCheckInModal(true);
     }
 
     const onRegisterModalClose = () => {
