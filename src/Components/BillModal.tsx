@@ -88,7 +88,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
             }
         };
 
-        fetchBills();
+        fetchBills().then();
         if (error!=null) {
             enqueueSnackbar(error, {
                 variant: "error",
@@ -244,9 +244,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
             }
         };
 
-        fetchBills();
-        onClose();
-        
+        fetchBills().then(() => onClose());
     };
 
     return (
