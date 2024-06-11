@@ -58,7 +58,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
             }
         });
 
-        if(response.response.status == 201) {
+        if(response.response.status == 201 || response.response.status === 200) {
             const message = registerFormData.beginTime === defaultDate ?
                 '入住成功!' :
                 `预约成功! 预约时间${registerFormData.beginTime}-${registerFormData.endTime}`;

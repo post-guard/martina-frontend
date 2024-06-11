@@ -58,7 +58,7 @@ const DeleteRoomModal: FC<DeleteRoomModalProps> = ({rooms, onClose}) => {
                     }
                 });
 
-                if(response.response.status !== 204) {
+                if(response.response.status !== 204 && response.response.status !== 200) {
                     throw error;
                 }
             })
