@@ -23,8 +23,7 @@ export function MonitorPage() {
 
     const [showSettingModel, setShowSettingModel] = useState(false)
     const [showTestModel, setShowTestModel] = useState(false)
-    // @ts-expect-error ...
-    const [systemStatus, setSystemStatus] = useState<openapi.components['schemas']['AirConditionerOption']>(
+    const [systemStatus] = useState<openapi.components['schemas']['AirConditionerOption']>(
         {
             cooling: true,
             minTemperature: 0,
