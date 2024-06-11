@@ -99,6 +99,7 @@ export function AirConPanelPage() {
                 }
             })
             if (responses.response.status === 200 && responses.data !== undefined && responses.data.checkin !== undefined) {
+
                 setRoomId(responses.data.checkin.roomId);
                 disable.current = responses.data.checkin.checkout;
             }
@@ -110,48 +111,87 @@ export function AirConPanelPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [roomList]);
 
-    const getSocketUrl = useCallback(() => {
-        if(roomId === '') {
-            return SOCKET_URL+ 'airConditioner/ws/' + '0'
-        }
-        return SOCKET_URL + 'airConditioner/ws/' + roomId;
-    },[roomId]);
-
-    const {
-        lastMessage,
-    } = useWebSocket(getSocketUrl, {
-        onOpen: () => console.log('websocket opened'),
-        retryOnError: true,
-        shouldReconnect: () => true,
-        reconnectAttempts: 10,
-        reconnectInterval: (attemptNumber) =>
-            Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
-    },(roomId !== '' && !(disable.current)));
+    // const getSocketUrl = useCallback(() => {
+    //     if(roomId === '') {
+    //         return SOCKET_URL+ 'airConditioner/ws/' + '0'
+    //     }
+    //     return SOCKET_URL + 'airConditioner/ws/' + roomId;
+    // },[roomId]);
+    //
+    // const {
+    //     lastMessage,
+    // } = useWebSocket(getSocketUrl, {
+    //     onOpen: () => console.log('websocket opened'),
+    //     retryOnError: true,
+    //     shouldReconnect: () => true,
+    //     reconnectAttempts: 10,
+    //     reconnectInterval: (attemptNumber) =>
+    //         Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
+    // },(roomId !== '' && !(disable.current)));
     // 当未获取到房间号，或不能操控空调时不连接
-
+    const lastMessage  = useRef();
     useEffect(() => {
-        if (lastMessage !== null) {
-            roomData.current = JSON.parse(lastMessage.data) as AirConditionerState
-            if(roomData.current.status === 0) {
-                // 没开机就不能主动编辑
-                setTargetChanged(false)
-            }
-            if(!targetChanged) {
-                // 没有处于编辑状态，更新控制界面
-                setTargetState({
-                    "status": roomData.current.status,
-                    "targetTemperature": roomData.current.targetTemperature,
-                    "speed": roomData.current.speed
-                })
-            } else {
-                setTargetState({
-                    ...targetState,
-                    "status": roomData.current.status,
-                })
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lastMessage])
+        const intervalId = setInterval(()=>{
+            client.GET('/api/room/{roomId}',{
+                params: {
+                    path: {
+                        roomId : roomId
+                    }
+                }
+            }).then(response => {
+                lastMessage.current = response.data
+                if (lastMessage.current !== undefined) {
+
+                    roomData.current = lastMessage.current.airConditioner as AirConditionerState
+                    if(roomData.current.status === 0) {
+                        // 没开机就不能主动编辑
+                        setTargetChanged(false)
+                    }
+                    if(!targetChanged) {
+                        // 没有处于编辑状态，更新控制界面
+                        setTargetState({
+                            "status": roomData.current.status,
+                            "targetTemperature": roomData.current.targetTemperature,
+                            "speed": roomData.current.speed
+                        })
+                    } else {
+                        setTargetState({
+                            ...targetState,
+                            "status": roomData.current.status,
+                        })
+                    }
+                }
+            })
+
+
+        },2000)
+        return () => clearInterval(intervalId);
+    }, [roomId]);
+
+    // useEffect(() => {
+    //     if (lastMessage.current !== undefined) {
+    //
+    //         roomData.current = JSON.parse(lastMessage.current.airConditioner) as AirConditionerState
+    //         if(roomData.current.status === 0) {
+    //             // 没开机就不能主动编辑
+    //             setTargetChanged(false)
+    //         }
+    //         if(!targetChanged) {
+    //             // 没有处于编辑状态，更新控制界面
+    //             setTargetState({
+    //                 "status": roomData.current.status,
+    //                 "targetTemperature": roomData.current.targetTemperature,
+    //                 "speed": roomData.current.speed
+    //             })
+    //         } else {
+    //             setTargetState({
+    //                 ...targetState,
+    //                 "status": roomData.current.status,
+    //             })
+    //         }
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [lastMessage.current])
 
     return <>
         <Box sx={{position: "relative", width: "100%", height: "100%", display: "flex", alignItems: "center"}}>

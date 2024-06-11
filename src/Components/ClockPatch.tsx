@@ -1,8 +1,11 @@
 import useWebSocket from "react-use-websocket";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import dayjs from "dayjs";
 import {Box, Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
+import * as openapi from "../Interfaces/openapi";
+import {MonitorRoomState} from "../Interfaces/MonitorRoomState.ts";
+import createClient from "openapi-fetch";
 
 export default function ClockPatch() {
     const [currentTime, setCurrentTime] = useState({
@@ -11,28 +14,54 @@ export default function ClockPatch() {
         date: 1,
         time: '00:00:00'
     });
-    const {
-        lastMessage,
-    } = useWebSocket(SOCKET_URL + 'time', {
-        onOpen: () => console.log('clock websocket opened'),
-        retryOnError: true,
-        shouldReconnect: () => true,
-        reconnectAttempts: 10,
-        reconnectInterval: (attemptNumber) =>
-            Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
-    });
-
+    // const {
+    //     lastMessage,
+    // } = useWebSocket(SOCKET_URL + 'time', {
+    //     onOpen: () => console.log('clock websocket opened'),
+    //     retryOnError: true,
+    //     shouldReconnect: () => true,
+    //     reconnectAttempts: 10,
+    //     reconnectInterval: (attemptNumber) =>
+    //         Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
+    // });
+    //
+    // useEffect(() => {
+    //     if (lastMessage !== null) {
+    //         const time = dayjs(JSON.parse(lastMessage.data).now)
+    //         setCurrentTime({
+    //             year: time.year(),
+    //             month: time.month() + 1,
+    //             date: time.date(),
+    //             time: time.format('HH:mm:ss')
+    //         })
+    //     }
+    // }, [lastMessage])
+    const client = createClient<openapi.paths>();
+    const lastMessage = useRef();
     useEffect(() => {
-        if (lastMessage !== null) {
-            const time = dayjs(JSON.parse(lastMessage.data).now)
-            setCurrentTime({
-                year: time.year(),
-                month: time.month() + 1,
-                date: time.date(),
-                time: time.format('HH:mm:ss')
+
+        const intervalId = setInterval(() => {
+            client.GET('/api/time/now').then(response => {
+                // @ts-expect-error ...
+                lastMessage.current = response.data as openapi.components["schemas"]["TimeResponse"];
+                if (lastMessage.current !== undefined) {
+                    console.log(lastMessage.current)
+                    // @ts-expect-error ...
+                    const time = dayjs(lastMessage.current.now)
+                    setCurrentTime({
+                        year: time.year(),
+                        month: time.month() + 1,
+                        date: time.date(),
+                        time: time.format('HH:mm:ss')
+                    })
+
+                }
             })
-        }
-    }, [lastMessage])
+
+
+        }, 1000)
+        return () => clearInterval(intervalId);
+    }, []);
 
     return <>
         <Stack sx={{display: "flex", alignItems: "center"}}>

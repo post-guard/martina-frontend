@@ -4,7 +4,7 @@ import {
 
 import createClient from "openapi-fetch";
 import * as openapi from "../Interfaces/openapi";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useAuthMiddleware} from "../Utils/Middleware.tsx";
 import {AirConStateCard} from "../Components/AirConStateCard.tsx";
 import useWebSocket from "react-use-websocket";
@@ -14,6 +14,7 @@ import {enqueueSnackbar} from "notistack";
 import SystemSettingModal from "../Components/SystemSettingModal.tsx";
 import {useAppSelector} from "../Utils/StoreHooks.ts";
 import TestConditionModal from "../Components/TestConditionModal.tsx";
+import {components} from "../Interfaces/openapi";
 
 const client = createClient<openapi.paths>();
 
@@ -76,6 +77,7 @@ export function MonitorPage() {
                     return a.info.id > b.info.id ? 1 : -1
                 })
                 setRoomList(newRoomList);
+                console.log(newRoomList)
             } else {
                 console.log('请求房间列表不存在!')
             }
@@ -84,95 +86,141 @@ export function MonitorPage() {
 
     }, [refresh]);
 
+    // useEffect(() => {
+    //     const getSystemStatus = async () => {
+    //         const responses = await client.GET('/api/airConditionerManage')
+    //         if (responses.response.status === 200 && responses.data !== undefined) {
+    //             setSystemStatus({
+    //                 cooling: responses.data.cooling,
+    //                 minTemperature: responses.data.minTemperature,
+    //                 maxTemperature: responses.data.maxTemperature,
+    //                 defaultTemperature: responses.data.defaultTemperature,
+    //                 defaultFanSpeed: responses.data.defaultFanSpeed,
+    //                 highSpeedPerDegree: responses.data.highSpeedPerDegree,
+    //                 middleSpeedPerDegree: responses.data.middleSpeedPerDegree,
+    //                 lowSpeedPerDegree: responses.data.lowSpeedPerDegree,
+    //                 backSpeed: responses.data.backSpeed,
+    //                 temperatureThreshold: responses.data.temperatureThreshold,
+    //                 pricePerDegree: responses.data.pricePerDegree
+    //             })
+    //             setSystemControlButtonStatus(true)
+    //         } else {
+    //             setSystemStatus({
+    //                 cooling: true,
+    //                 minTemperature: 0,
+    //                 maxTemperature: 0,
+    //                 defaultTemperature: 0,
+    //                 defaultFanSpeed: 0,
+    //                 highSpeedPerDegree: 0,
+    //                 middleSpeedPerDegree: 0,
+    //                 lowSpeedPerDegree: 0,
+    //                 backSpeed: 0,
+    //                 temperatureThreshold: 0,
+    //                 pricePerDegree: 0
+    //             })
+    //             setSystemControlButtonStatus(false)
+    //         }
+    //
+    //     }
+    //
+    //     getSystemStatus();
+    // }, [showSettingModel])
+
+
+    // const {
+    //     lastMessage,
+    // } = useWebSocket(SOCKET_URL + 'airConditioner/ws/', {
+    //     onOpen: () => console.log('websocket opened'),
+    //     retryOnError: true,
+    //     shouldReconnect: () => true,
+    //     reconnectAttempts: 10,
+    //     reconnectInterval: (attemptNumber) =>
+    //         Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
+    // });
+
+    // useEffect(() => {
+    //     if (lastMessage !== null) {
+    //         const roomStates = JSON.parse(lastMessage.data) as AirConditionerState[];
+    //         const newRoomList: MonitorRoomState[] = [];
+    //         for (const roomState of roomStates) {
+    //             for (const room of roomList) {
+    //                 if (room.info.id === roomState.roomId) {
+    //                     const newRoom: MonitorRoomState = {
+    //                         info: {
+    //                             id: room.info.id,
+    //                             name: room.info.name,
+    //                         },
+    //                         airConState: {
+    //                             cooling: roomState.cooling,
+    //                             status: roomState.status,
+    //                             roomId: roomState.roomId,
+    //                             speed: roomState.speed,
+    //                             targetTemperature: roomState.targetTemperature,
+    //                             temperature: roomState.temperature
+    //                         }
+    //                     }
+    //                     newRoomList.push(newRoom);
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //         newRoomList.sort((a, b) => {
+    //             return a.info.id > b.info.id ? 1 : -1
+    //         })
+    //         setRoomList(newRoomList)
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [lastMessage])
+    const lastMessage  = useRef<openapi.components["schemas"]["RoomResponse"][]>([]);
     useEffect(() => {
-        const getSystemStatus = async () => {
-            const responses = await client.GET('/api/airConditionerManage')
-            if (responses.response.status === 200 && responses.data !== undefined) {
-                setSystemStatus({
-                    cooling: responses.data.cooling,
-                    minTemperature: responses.data.minTemperature,
-                    maxTemperature: responses.data.maxTemperature,
-                    defaultTemperature: responses.data.defaultTemperature,
-                    defaultFanSpeed: responses.data.defaultFanSpeed,
-                    highSpeedPerDegree: responses.data.highSpeedPerDegree,
-                    middleSpeedPerDegree: responses.data.middleSpeedPerDegree,
-                    lowSpeedPerDegree: responses.data.lowSpeedPerDegree,
-                    backSpeed: responses.data.backSpeed,
-                    temperatureThreshold: responses.data.temperatureThreshold,
-                    pricePerDegree: responses.data.pricePerDegree
-                })
-                setSystemControlButtonStatus(true)
-            } else {
-                setSystemStatus({
-                    cooling: true,
-                    minTemperature: 0,
-                    maxTemperature: 0,
-                    defaultTemperature: 0,
-                    defaultFanSpeed: 0,
-                    highSpeedPerDegree: 0,
-                    middleSpeedPerDegree: 0,
-                    lowSpeedPerDegree: 0,
-                    backSpeed: 0,
-                    temperatureThreshold: 0,
-                    pricePerDegree: 0
-                })
-                setSystemControlButtonStatus(false)
-            }
 
-        }
+        const intervalId = setInterval(()=>{
+            client.GET('/api/room').then(response => {
+                lastMessage.current = response.data as openapi.components["schemas"]["RoomResponse"][]
+                if (lastMessage.current !== undefined) {
+                    const roomStates = lastMessage.current;
+                            const newRoomList: MonitorRoomState[] = [];
 
-        getSystemStatus();
-    }, [showSettingModel])
+                            for (const roomState of roomStates) {
+                                // for (const room of roomList) {
+                                //     if (room.info.id === roomState.roomId) {
 
-
-    const {
-        lastMessage,
-    } = useWebSocket(SOCKET_URL + 'airConditioner/ws/', {
-        onOpen: () => console.log('websocket opened'),
-        retryOnError: true,
-        shouldReconnect: () => true,
-        reconnectAttempts: 10,
-        reconnectInterval: (attemptNumber) =>
-            Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
-    });
-
-    useEffect(() => {
-        if (lastMessage !== null) {
-            const roomStates = JSON.parse(lastMessage.data) as AirConditionerState[];
-            const newRoomList: MonitorRoomState[] = [];
-            for (const roomState of roomStates) {
-                for (const room of roomList) {
-                    if (room.info.id === roomState.roomId) {
-                        const newRoom: MonitorRoomState = {
-                            info: {
-                                id: room.info.id,
-                                name: room.info.name,
-                            },
-                            airConState: {
-                                cooling: roomState.cooling,
-                                status: roomState.status,
-                                roomId: roomState.roomId,
-                                speed: roomState.speed,
-                                targetTemperature: roomState.targetTemperature,
-                                temperature: roomState.temperature
+                                        const newRoom: MonitorRoomState = {
+                                            info: {
+                                                id: roomState.roomId,
+                                                name: roomState.roomName,
+                                            },
+                                            airConState: {
+                                                cooling: roomState.airConditioner.cooling,
+                                                status: roomState.airConditioner.status,
+                                                roomId: roomState.airConditioner.roomId,
+                                                speed: roomState.airConditioner.speed,
+                                                targetTemperature: roomState.airConditioner.targetTemperature,
+                                                temperature: roomState.airConditioner.temperature
+                                            }
+                                        }
+                                        newRoomList.push(newRoom);
+                                        //break;
+                                //     }
+                                // }
                             }
+
+                            newRoomList.sort((a, b) => {
+                                return a.info.id > b.info.id ? 1 : -1
+                            })
+                            console.log(newRoomList)
+                            setRoomList(newRoomList)
                         }
-                        newRoomList.push(newRoom);
-                        break;
-                    }
-                }
-            }
-            newRoomList.sort((a, b) => {
-                return a.info.id > b.info.id ? 1 : -1
             })
-            setRoomList(newRoomList)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lastMessage])
+
+
+        },2000)
+        return () => clearInterval(intervalId);
+    }, []);
 
     const handleTurnOnButton = async () => {
         const response = await client.PUT('/api/airConditionerManage/open');
-        if (response.response.status === 200) {
+        if (response.response.status === 200 || response.response.status === 202) {
             enqueueSnackbar("空调系统启动成功", {
                 variant: "success",
                 autoHideDuration: 1000,
