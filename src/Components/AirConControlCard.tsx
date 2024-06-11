@@ -64,7 +64,7 @@ export function AirConControlCard({roomData,targetState,setTargetState,targetCha
                     speed: targetState.speed
                 }
             })
-            if (responses.response.status === 200) {
+            if (responses.response.status === 200 || responses.response.status === 202) {
                 // setPowerButtonColor('gray');
                 // setTargetState({...targetState, status: 0})
                 enqueueSnackbar("空调已关闭", {

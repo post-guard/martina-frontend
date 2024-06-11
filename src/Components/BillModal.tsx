@@ -17,8 +17,8 @@ interface BillModalProps {
 interface Bill {
     id?: string | null | undefined;
     userId: string;
-    beginTime: string;
-    endTime: string;
+    beginTime: number;
+    endTime: number;
     checkinResponses: {
         checkinId: string;
         roomId: string;
@@ -28,8 +28,8 @@ interface Bill {
         checkout: boolean;
     }[];
     airConditionerRecordResponses: {
-        beginTime: string;
-        endTime: string;
+        beginTime: number;
+        endTime: number;
         beginTemperature: number;
         endTemperature: number;
         temperatureDelta: number;
@@ -59,7 +59,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
     useEffect(() => {
         // 去除重复的 userId 和 roomId 组合
         const checkinIds = Array.from(new Set(checkInRecords.map(record => record.checkinId)));
-        
+
         const fetchBills = async () => {
             try {
                 if(checkinIds.length === 0) {
@@ -67,7 +67,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
                     return;
                 }
                 const responses = await client.POST('/api/bill/preview', {body: checkinIds});
-                
+
                 if (responses.response.status === 200 && responses.data) {
                     setBills(responses.data);
                     setUsername(await fetchUserAccount(responses.data.userId));
@@ -80,7 +80,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
                 } else {
                     setError("未知原因 - 请求失败");
                 }
-                
+
             } catch (error) {
                 setError("无法获取获取预览账单 - "+ error) ;
             } finally {
@@ -125,7 +125,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
             return;
         }
 
-        
+
         const fetchRoomName = async (roomId: string) => {
             try {
                 const responses = await client.GET('/api/room/{roomId}', {
@@ -212,7 +212,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
         const fetchBills = async () => {
             try {
                 const responses = await client.POST('/api/bill/checkout', {body: checkinIds});
-    
+
                 if (responses.response.status === 200 && responses.data) {
                     setBills(responses.data);
                     enqueueSnackbar("结账成功", {
@@ -235,8 +235,8 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
                     //throw new Error("结账失败！");
                 }
 
-                
-                
+
+
             } catch (error) {
                 setError("Error while fetching bills: ");
             } finally {
@@ -277,7 +277,7 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
                             {/*{checkInRecords.map((record) => (*/}
                             {/*    <Typography variant='body2' color="red">[debug]roomId: {record.roomId}</Typography>*/}
                             {/*))}*/}
-                            
+
                             {loading ? (
                                 <Typography>Loading...</Typography>
                             ) : error ? (
