@@ -37,8 +37,9 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
 
     const getDefaultDate = async (): Promise<string> => {
         const response = await client.GET('/api/time/now')
-        if(response.response.status === 200 && response.data !== undefined && response.data.now.length > 0) {
-            const date = response.data.now.slice(0, 10);
+        if(response.response.status === 200 && response.data !== undefined) {
+            const date = dayjs(response.data.now).format('YYYY-MM-DD');
+            console.log(date)
             setDefaultDate(date);
             return date;
         }

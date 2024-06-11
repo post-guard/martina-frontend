@@ -545,6 +545,14 @@ export interface paths {
             "text/json": components["schemas"]["ExceptionMessage"];
           };
         };
+        /** @description Unauthorized */
+        401: {
+          content: never;
+        };
+        /** @description Forbidden */
+        403: {
+          content: never;
+        };
       };
     };
   };
@@ -674,14 +682,6 @@ export interface paths {
             "text/json": components["schemas"]["ExceptionMessage"];
           };
         };
-        /** @description Unauthorized */
-        401: {
-          content: never;
-        };
-        /** @description Forbidden */
-        403: {
-          content: never;
-        };
       };
     };
   };
@@ -751,29 +751,15 @@ export interface paths {
       };
     };
   };
-  "/api/time/now": {
-    /** 获得当前的系统时间 */
-    get: {
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "text/plain": components["schemas"]["TimeResponse"];
-            "application/json": components["schemas"]["TimeResponse"];
-            "text/json": components["schemas"]["TimeResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/api/user/register": {
-    /** 注册用户 */
-    post: {
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["RegisterRequest"];
-          "text/json": components["schemas"]["RegisterRequest"];
-          "application/*+json": components["schemas"]["RegisterRequest"];
+  "/api/test/clear": {
+    /**
+     * 清除指定测试集造成的影响
+     * @description casename : hot | cool
+     */
+    patch: {
+      parameters: {
+        query?: {
+          caseName?: string;
         };
       };
       responses: {
@@ -800,15 +786,29 @@ export interface paths {
       };
     };
   };
-  "/api/test/clear": {
-    /**
-     * 清除指定测试集造成的影响
-     * @description casename : hot | cool
-     */
-    patch: {
-      parameters: {
-        query?: {
-          caseName?: string;
+  "/api/time/now": {
+    /** 获得当前的系统时间 */
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["TimeResponse"];
+            "application/json": components["schemas"]["TimeResponse"];
+            "text/json": components["schemas"]["TimeResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/api/user/register": {
+    /** 注册用户 */
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["RegisterRequest"];
+          "text/json": components["schemas"]["RegisterRequest"];
+          "application/*+json": components["schemas"]["RegisterRequest"];
         };
       };
       responses: {
@@ -1019,15 +1019,15 @@ export interface components {
     };
     AirConditionerRecordResponse: {
       /**
-       * Format: date-time
+       * Format: int64
        * @description 开始使用的时间
        */
-      beginTime: string;
+      beginTime: number;
       /**
-       * Format: date-time
+       * Format: int64
        * @description 结束使用的时间
        */
-      endTime: string;
+      endTime: number;
       /**
        * Format: double
        * @description 开始使用时的温度
@@ -1101,15 +1101,15 @@ export interface components {
       /** @description 结账的用户名 */
       userId: string;
       /**
-       * Format: date-time
+       * Format: int64
        * @description 入住的开始时间
        */
-      beginTime: string;
+      beginTime: number;
       /**
-       * Format: date-time
+       * Format: int64
        * @description 入住的结束时间
        */
-      endTime: string;
+      endTime: number;
       /** @description 入住时间段中的入住记录列表 */
       checkinResponses: components["schemas"]["CheckinResponse"][];
       /** @description 入住时间段中的空调使用记录列表 */
@@ -1284,10 +1284,10 @@ export interface components {
     };
     TimeResponse: {
       /**
-       * Format: date-time
+       * Format: int64
        * @description 当前的系统时间
        */
-      now: string;
+      now: number;
     };
     /** @description 用户信息传输类 */
     UserResponse: {

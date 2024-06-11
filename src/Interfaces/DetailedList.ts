@@ -1,6 +1,6 @@
 export interface DetailedList {
-    beginTime: string;
-    endTime: string;
+    beginTime: number;
+    endTime: number;
     beginTemperature: number;
     endTemperature: number;
     temperatureDelta: number;
