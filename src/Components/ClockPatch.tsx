@@ -24,7 +24,7 @@ export default function ClockPatch() {
 
     useEffect(() => {
         if (lastMessage !== null) {
-            const time = dayjs(JSON.parse(lastMessage.data).now)
+            const time = dayjs(JSON.parse(lastMessage.data).now * 1000)
             setCurrentTime({
                 year: time.year(),
                 month: time.month() + 1,
