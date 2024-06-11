@@ -129,6 +129,7 @@ export function AirConPanelPage() {
     // },(roomId !== '' && !(disable.current)));
     // 当未获取到房间号，或不能操控空调时不连接
     const lastMessage  = useRef();
+    // @ts-ignore
     useEffect(() => {
         const intervalId = setInterval(()=>{
             client.GET('/api/room/{roomId}',{
@@ -166,6 +167,7 @@ export function AirConPanelPage() {
 
         },2000)
         return () => clearInterval(intervalId);
+
     }, [roomId]);
 
     // useEffect(() => {
