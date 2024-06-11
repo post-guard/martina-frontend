@@ -1,10 +1,8 @@
-import useWebSocket from "react-use-websocket";
 import {useEffect, useRef, useState} from "react";
 import dayjs from "dayjs";
 import {Box, Stack} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import * as openapi from "../Interfaces/openapi";
-import {MonitorRoomState} from "../Interfaces/MonitorRoomState.ts";
 import createClient from "openapi-fetch";
 
 export default function ClockPatch() {

@@ -7,14 +7,11 @@ import * as openapi from "../Interfaces/openapi";
 import {useEffect, useRef, useState} from "react";
 import {useAuthMiddleware} from "../Utils/Middleware.tsx";
 import {AirConStateCard} from "../Components/AirConStateCard.tsx";
-import useWebSocket from "react-use-websocket";
-import {AirConditionerState} from "../Interfaces/AirConditionerState.ts";
 import {MonitorRoomState} from "../Interfaces/MonitorRoomState.ts";
 import {enqueueSnackbar} from "notistack";
 import SystemSettingModal from "../Components/SystemSettingModal.tsx";
 import {useAppSelector} from "../Utils/StoreHooks.ts";
 import TestConditionModal from "../Components/TestConditionModal.tsx";
-import {components} from "../Interfaces/openapi";
 
 const client = createClient<openapi.paths>();
 
@@ -26,6 +23,7 @@ export function MonitorPage() {
 
     const [showSettingModel, setShowSettingModel] = useState(false)
     const [showTestModel, setShowTestModel] = useState(false)
+    // @ts-expect-error ...
     const [systemStatus, setSystemStatus] = useState<openapi.components['schemas']['AirConditionerOption']>(
         {
             cooling: true,

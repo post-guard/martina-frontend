@@ -7,7 +7,7 @@ export default defineConfig({
     server: {
         proxy: {
             "/api": {
-                target: "http://martina.rrricardo.top",
+                target: "http://10.29.234.132:8080",
                 changeOrigin: true,
             }
         }

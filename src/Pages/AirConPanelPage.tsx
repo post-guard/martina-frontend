@@ -13,12 +13,11 @@ import {
 } from "@mui/material";
 import {AirConControlCard} from "../Components/AirConControlCard.tsx";
 import {AirConDisplayCard} from "../Components/AirConDisplayCard.tsx";
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useAuthMiddleware} from "../Utils/Middleware.tsx";
 import createClient from "openapi-fetch";
 import * as openapi from "../Interfaces/openapi";
 import {useAppSelector} from "../Utils/StoreHooks.ts";
-import useWebSocket from "react-use-websocket";
 import {AirConditionerController} from "../Interfaces/AirConditionerController.ts";
 import {AirConditionerState} from "../Interfaces/AirConditionerState.ts";
 
@@ -139,9 +138,10 @@ export function AirConPanelPage() {
                     }
                 }
             }).then(response => {
+                // @ts-expect-error ...
                 lastMessage.current = response.data
                 if (lastMessage.current !== undefined) {
-
+// @ts-expect-error ...
                     roomData.current = lastMessage.current.airConditioner as AirConditionerState
                     if(roomData.current.status === 0) {
                         // 没开机就不能主动编辑
