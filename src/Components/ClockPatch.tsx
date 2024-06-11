@@ -59,7 +59,7 @@ export default function ClockPatch() {
 
         }, 1000)
         return () => clearInterval(intervalId);
-        // @ts-expect-error ...
+
     }, []);
 
     return <>
