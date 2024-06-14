@@ -149,8 +149,8 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
         const billData = [{
             '账单Id': bills.id || '',
             '用户Id': bills.userId,
-            '开始时间': new Date(bills.beginTime).toLocaleString(),
-            '结束时间': new Date(bills.endTime).toLocaleString(),
+            '开始时间': new Date(bills.beginTime * 1000).toLocaleString(),
+            '结束时间': new Date(bills.endTime * 1000).toLocaleString(),
             '房间费用': bills.roomFee,
             '空调费用': bills.airConditionerFee,
             // 其他属性...
@@ -168,8 +168,8 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
 
         // 转换 airConditionerRecordResponses 数据
         const airConditionerData = bills.airConditionerRecordResponses.map(response => ({
-            '开始时间': new Date(response.beginTime).toLocaleString(),
-            '结束时间': new Date(response.endTime).toLocaleString(),
+            '开始时间': new Date(response.beginTime * 1000).toLocaleString(),
+            '结束时间': new Date(response.endTime * 1000).toLocaleString(),
             '初始温度': response.beginTemperature,
             '开始温度': response.endTemperature,
             '温度变化': response.temperatureDelta,
@@ -296,10 +296,10 @@ const BillModal: FC<BillModalProps> = ({checkInRecords, onClose}) => {
                                                     用户ID: {bills.userId}
                                                 </Typography>
                                                 <Typography variant="body2" color="text.secondary">
-                                                    开始时间: {new Date(bills.beginTime).toLocaleString()}
+                                                    开始时间: {new Date(bills.beginTime * 1000).toLocaleString()}
                                                 </Typography>
                                                 <Typography variant="body2" color="text.secondary">
-                                                    结束时间: {new Date(bills.endTime).toLocaleString()}
+                                                    结束时间: {new Date(bills.endTime * 1000).toLocaleString()}
                                                 </Typography>
                                                 <Typography variant="body2" color="text.secondary">
                                                     房间费用: ¥{bills.roomFee}
