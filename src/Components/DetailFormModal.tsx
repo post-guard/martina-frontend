@@ -91,8 +91,8 @@ const DetailFormModal: FC<DetailFormModalProps> = ({checkInRecord, onClose}) => 
 
     const exportToExcel = () => {
         const ws = XLSX.utils.json_to_sheet(details.map(detail => ({
-            '开始时间': new Date(detail.beginTime).toLocaleString(),
-            '结束时间': new Date(detail.endTime).toLocaleString(),
+            '开始时间': new Date(detail.beginTime * 1000).toLocaleString(),
+            '结束时间': new Date(detail.endTime * 1000).toLocaleString(),
             '开始温度': detail.beginTemperature,
             '结束温度': detail.endTemperature,
             '温度变化': detail.temperatureDelta,
@@ -148,10 +148,10 @@ const DetailFormModal: FC<DetailFormModalProps> = ({checkInRecord, onClose}) => 
                                         <Card key={index} sx={{ width: '100%', height: 'fit-content' }}>
                                             <CardContent>
                                                 <Typography variant="h6" component="div">
-                                                    {index}. 空调费用 
+                                                    {index}. 空调费用
                                                 </Typography>
                                                 <Typography variant="body2" color="text.secondary">
-                                                    时间: {new Date(detail.beginTime).toLocaleString()} - {new Date(detail.endTime).toLocaleString()}
+                                                    时间: {new Date(detail.beginTime * 1000).toLocaleString()} - {new Date(detail.endTime * 1000).toLocaleString()}
                                                 </Typography>
                                                 <Typography variant="body2" color="text.secondary">
                                                     温度: {detail.beginTemperature.toFixed(2)}°C - {detail.endTemperature.toFixed(2)}°C 变化: {detail.temperatureDelta.toFixed(2)}°C
@@ -185,7 +185,7 @@ const DetailFormModal: FC<DetailFormModalProps> = ({checkInRecord, onClose}) => 
             </Modal>
         </>
     )
-    
+
 }
 
 export default DetailFormModal;
