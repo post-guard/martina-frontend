@@ -152,8 +152,8 @@ export function AirConDisplayCard({roomData}:{roomData:AirConditionerState}) {
                                                 placeItems: "center"
                                             }}>
                                     {
-                                        currentState.speed === 0 ? '0.1元/度' : (
-                                            currentState.speed === 1 ? '0.2元/度' : '0.3元/度')
+                                        currentState.speed === 0 ? '1元/度' : (
+                                            currentState.speed === 1 ? '1元/度' : '1元/度')
                                     }
                                 </Typography>
                             </Box>
