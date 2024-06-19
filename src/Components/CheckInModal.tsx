@@ -26,6 +26,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
     const [defaultDate, setDefaultDate] = useState('');
 
     useEffect(() => {
+        //获取并设置默认日期为当前系统日期
         getDefaultDate().then(defaultDate => {
             setRegisterFormData({"roomId": selectedRoom.id,
                 "userId": "",
@@ -47,6 +48,7 @@ const CheckInModal: React.FC<CheckInModalProps> = ({ onClose, selectedRoom}) => 
     }
 
     const onConfirmClick = async () => {
+        //设置按钮为不可操作
         setConfirmButtonState(false);
         const response = await client.POST("/api/checkin", {
             body: {

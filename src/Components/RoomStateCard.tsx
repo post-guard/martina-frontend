@@ -8,6 +8,7 @@ interface RoomProps {
 }
 
 const RoomStateCard: React.FC<RoomProps> = ({room, onRoomClick}) => {
+    //绿色表示已入住，蓝色表示空闲
     const backgroundColor = room.status == 'occupied'
         ? '#6ed31c'
         : '#4991e0';

@@ -18,6 +18,7 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userNam
     const [showBillModal, setShowBillModal] = useState(false);
     const [disableConfirmButton, setDisableConfirmButton] = useState(true);
 
+    //定义表格的列
     const columns:GridColDef[] = [
         {
             field: 'checkbox',
@@ -56,7 +57,7 @@ const CheckInRecordList: FC<CheckInRecordListProps> = ({records, userId, userNam
         }
     ]
 
-
+    //定义表格的行
     const rows = records.map((record, index) => {
         return {
             'id': index,

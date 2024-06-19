@@ -23,7 +23,9 @@ export function RoomStatePage() {
     const [selectedRoom, setSelectedRoom] = useState<Room>({userId: "", userName: "", id:'',name:'',status:'occupied'});
 
     useEffect(() => {
+        //获取房间列表
         getAllRooms().then(newRooms => {
+            //获取已入住房间的入住人信息
             getRoomOccupant(newRooms).then(rooms => {
                 setRooms(rooms);
             })
