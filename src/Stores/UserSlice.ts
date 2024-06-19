@@ -4,7 +4,7 @@ import * as openapi from "../Interfaces/openapi";
 
 
 export const setUser = createAsyncThunk("user/getUser", async ({token, userId}: { token: string, userId: string }) => {
-
+        // 在用户登录后,将用户信息保存到localstorage中
         const client = createClient<openapi.paths>();
         const authMiddleware: Middleware = {
             async onRequest(req) {
@@ -20,7 +20,7 @@ export const setUser = createAsyncThunk("user/getUser", async ({token, userId}: 
                 }
             }
         })
-
+        // 权限判断
         if (responseForUser.response.status == 200 && responseForUser.data !== undefined) {
             let userAuth;
             if (responseForUser.data.auth.sudo) {

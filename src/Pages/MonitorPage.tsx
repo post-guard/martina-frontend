@@ -124,7 +124,7 @@ export function MonitorPage() {
         getSystemStatus();
     }, [showSettingModel])
 
-
+    // 开启空调监控的websocket
     const {
         lastMessage,
     } = useWebSocket(SOCKET_URL + 'airConditioner/ws/', {

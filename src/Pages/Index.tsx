@@ -10,7 +10,7 @@ export function Index() {
     const navigate = useNavigate();
     // const [childPage, setChildPage] = useState("");
 
-
+    // 在这里进行用户权限的页面控制,对应权限能看到什么页面在这里设定
     const userAuth = (useAppSelector((store) => store.userInfo.auth));
     let childrenPages: { name: string, url: string }[] = [];
     switch (userAuth) {

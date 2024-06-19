@@ -109,7 +109,7 @@ export function AirConPanelPage() {
         } else disable.current = !(user.auth === 'sudo' || user.auth === 'airconAdmin');
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [roomList]);
-
+    // 连接空调websocket
     const getSocketUrl = useCallback(() => {
         if(roomId === '') {
             return SOCKET_URL+ 'airConditioner/ws/' + '0'
