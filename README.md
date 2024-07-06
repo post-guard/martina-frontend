@@ -4,9 +4,9 @@
 ```shell
 npm install
 ```
-下载前端相关库
+下载前端相关库。
 
-`vite.config.ts`中配置后端地址，当前固定为[http://martina.rrricardo.top]()
+`vite.config.ts`中配置后端地址，即运行[后端仓库](https://github.com/post-guard/Martina)中的项目。
 
 ## 项目运行
 ```shell
@@ -14,10 +14,11 @@ npm run dev
 ```
 
 ## 请求接口
-后端提供的接口在[http://martina.rrricardo.top/swagger]()
+后端提供的接口使用`swagger`进行描述，运行后端项目之后，进行`/swagger`路径下即可查看并进行测试，详情可见[文档](https://learn.microsoft.com/zh-cn/aspnet/core/tutorials/web-api-help-pages-using-swagger?view=aspnetcore-8.0)。
 
 前端为支持typescript，利用`openapi-typescript`生成接口类型文档
 要更新接口类型文档，使用
+
 ```shell
 npx openapi-typescript http://martina.rrricardo.top/swagger/v1/swagger.json  --output src/Interfaces/openapi.d.ts
 ```
